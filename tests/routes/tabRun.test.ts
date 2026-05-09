@@ -34,6 +34,25 @@ describe("POST /v1/tab/run", () => {
     expect(res.body.hackathonScopeNote).toMatch(/x402 router is the backbone/i);
   });
 
+  it("budget path skips model-call when budget remains below model price", async () => {
+    const res = await request(app)
+      .post("/v1/tab/run")
+      .send({
+        goal: "Analyze USDC liquidity on Base with a 2 cent budget.",
+        token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        chain: "base",
+        budget_usd: 0.0205
+      })
+      .expect(200);
+
+    expect(res.body.totalSpentUsd).toBe(0.02);
+    expect(res.body.remainingBudgetUsd).toBe(0.0005);
+    expect(res.body.receipts).toHaveLength(1);
+    expect(res.body.spendRequests[1].tool).toBe("model-call");
+    expect(res.body.spendRequests[1].status).toBe("skipped");
+    expect(res.body.spendRequests[1].policyResult).toBe("insufficient_budget");
+  });
+
   it("invalid request returns 400", async () => {
     const res = await request(app)
       .post("/v1/tab/run")
