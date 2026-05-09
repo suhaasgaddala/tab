@@ -5,7 +5,7 @@ import LandingPage from "./pages/LandingPage";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/demo">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<AuthPage mode="login" />} />
