@@ -1,66 +1,34 @@
-import { useNavigate } from "react-router-dom";
-
 interface TopNavProps {
   onNewRun: () => void;
 }
 
-const NAV_LINKS = [
-  { label: "Agent Run", href: "#goal" },
-  { label: "Policy", href: "#policy" },
-  { label: "Receipts", href: "#receipts" },
-  { label: "Trace", href: "#answer" },
-];
-
 export function TopNav({ onNewRun }: TopNavProps) {
-  const navigate = useNavigate();
-
-  const signOut = () => {
-    // await supabase.auth.signOut();
-    localStorage.removeItem("tab_authed");
-    navigate("/login");
-  };
-
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <button onClick={onNewRun} className="group flex items-center gap-2.5" type="button">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 font-mono text-sm font-black text-zinc-950 transition-all group-hover:shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+        <button onClick={onNewRun} className="flex items-center gap-3" type="button">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white shadow-card">
             T
           </span>
-          <span className="hidden flex-col text-left sm:flex">
-            <span className="text-sm font-bold tracking-tight text-zinc-50">Tab</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-600">
+          <span className="flex flex-col text-left">
+            <span className="text-sm font-bold tracking-tight text-slate-950">Tab</span>
+            <span className="hidden text-[10px] uppercase tracking-[0.18em] text-slate-400 sm:inline">
               spend layer
             </span>
           </span>
         </button>
 
-        <nav className="hidden items-center sm:flex">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-zinc-200"
-            >
-              {link.label}
-            </a>
-          ))}
+        <nav className="hidden items-center gap-5 text-sm text-slate-500 sm:flex">
+          <a href="#requests" className="hover:text-slate-950">
+            Spend request
+          </a>
+          <a href="#receipts" className="hover:text-slate-950">
+            Receipt
+          </a>
+          <a href="#answer" className="hover:text-slate-950">
+            Close the Tab
+          </a>
         </nav>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={signOut}
-            className="hidden text-xs font-medium text-zinc-600 transition-colors hover:text-zinc-300 sm:block"
-          >
-            Sign out
-          </button>
-          <button
-            onClick={onNewRun}
-            className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-400 transition-all hover:border-amber-500/50 hover:bg-amber-500/20"
-          >
-            Open a Tab
-          </button>
-        </div>
       </div>
     </header>
   );

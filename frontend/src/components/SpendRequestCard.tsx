@@ -1,22 +1,11 @@
 import { motion } from "framer-motion";
-import type { PolicyResult, SpendRequest } from "../lib/types";
+import type { SpendRequest } from "../lib/types";
 
-// ─── Status display ───────────────────────────────────────────────────────────
-const STATUS_STYLE: Record<SpendRequest["status"], { border: string; badge: string; label: string }> = {
-  pending:          { border: "border-zinc-800",         badge: "border-amber-500/20 bg-amber-500/8 text-amber-400",     label: "Pending" },
-  "auto-approved":  { border: "border-emerald-500/20",   badge: "border-emerald-500/20 bg-emerald-500/8 text-emerald-400", label: "Approved" },
-  denied:           { border: "border-red-500/20",       badge: "border-red-500/20 bg-red-500/8 text-red-400",           label: "Denied" },
-  skipped:          { border: "border-zinc-700",         badge: "border-zinc-600 bg-zinc-800 text-zinc-500",             label: "Skipped" },
-};
-
-// ─── Policy result display ────────────────────────────────────────────────────
-const POLICY_META: Record<PolicyResult, { label: string; color: string }> = {
-  approved:                  { label: "Budget passed · category allowed",        color: "text-emerald-400" },
-  blocked_category:          { label: "Blocked — category denied by policy",     color: "text-red-400" },
-  category_not_allowed:      { label: "Category not in allowed list",            color: "text-red-400" },
-  max_price_per_call_exceeded:{ label: "Price exceeds per-call limit",           color: "text-red-400" },
-  insufficient_budget:       { label: "Skipped — insufficient remaining budget", color: "text-zinc-500" },
-  max_tool_calls_exceeded:   { label: "Skipped — max tool calls reached",        color: "text-zinc-500" },
+const STATUS_STYLE: Record<SpendRequest["status"], string> = {
+  pending: "border-slate-200 bg-slate-50 text-slate-600",
+  "auto-approved": "border-emerald-200 bg-emerald-50 text-emerald-700",
+  denied: "border-red-200 bg-red-50 text-red-700",
+  skipped: "border-amber-200 bg-amber-50 text-amber-700"
 };
 
 interface SpendRequestCardProps {
@@ -25,62 +14,42 @@ interface SpendRequestCardProps {
 }
 
 export function SpendRequestCard({ request, index }: SpendRequestCardProps) {
-  const style = STATUS_STYLE[request.status];
-  const policy = request.policyResult ? POLICY_META[request.policyResult] : null;
+  const statusText = request.status === "auto-approved" ? "Auto-approved" : request.status;
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.09 }}
-      className={`overflow-hidden rounded-2xl border bg-zinc-900 ${style.border}`}
+      transition={{ delay: index * 0.08 }}
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card"
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 px-4 py-3.5">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
-            Request #{index + 1}
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Spend request #{index + 1}
           </p>
-          <h3 className="mt-0.5 font-mono text-sm font-bold text-zinc-100">{request.tool}</h3>
+          <h3 className="mt-1 text-base font-bold text-slate-950">{request.tool}</h3>
         </div>
-        <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${style.badge}`}>
-          {style.label}
+        <span className={`rounded-full border px-3 py-1 text-[11px] font-bold capitalize ${STATUS_STYLE[request.status]}`}>
+          {statusText}
         </span>
       </div>
 
-      {/* Details grid */}
-      <div className="grid grid-cols-2 gap-3 border-t border-zinc-800/60 px-4 py-3">
+      <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <div>
-          <p className="text-[10px] text-zinc-600">Amount</p>
-          <p className="mt-0.5 font-mono text-base font-black text-amber-400">
-            ${request.amountUsd.toFixed(3)}
-          </p>
+          <dt className="text-slate-400">Amount</dt>
+          <dd className="mt-1 font-mono text-sm font-bold text-amber-700">${request.amountUsd.toFixed(3)}</dd>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-600">Category</p>
-          <p className="mt-0.5 text-xs font-semibold text-zinc-300">{request.category}</p>
+          <dt className="text-slate-400">Category</dt>
+          <dd className="mt-1 font-medium text-slate-700">{request.category}</dd>
         </div>
-      </div>
+      </dl>
 
-      {/* Reason */}
-      <div className="border-t border-zinc-800/60 px-4 py-3">
-        <p className="text-[10px] text-zinc-600 mb-1">Agent reason</p>
-        <p className="text-xs leading-relaxed text-zinc-400">{request.reason}</p>
-      </div>
-
-      {/* Policy verdict */}
-      <div className="border-t border-zinc-800/60 px-4 py-3">
-        <p className="text-[10px] text-zinc-600 mb-1.5">Policy verdict</p>
-        {policy ? (
-          <p className={`font-mono text-[11px] font-semibold ${policy.color}`}>
-            {policy.label}
-          </p>
-        ) : (
-          <p className="font-mono text-[11px] text-zinc-600">
-            {request.policyExplanation ?? "pending evaluation"}
-          </p>
-        )}
-      </div>
+      <p className="mt-4 text-sm leading-relaxed text-slate-600">{request.reason}</p>
+      <p className="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        Policy: {request.policyExplanation ?? request.policyResult ?? "pending"}
+      </p>
     </motion.article>
   );
 }
