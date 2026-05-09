@@ -7,3 +7,17 @@ npm-debug.log*
 .DS_Store
 coverage/
 cdp_key.pem
+
+# secrets
+.env
+.env.*
+*.pem
+*.key
+cdp_key.pem
+private_key*
+secrets.*
+
+# build / deps
+node_modules
+dist
+.DS_Store
