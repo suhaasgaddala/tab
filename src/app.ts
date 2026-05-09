@@ -8,6 +8,7 @@ import { createMarketSignalRouter } from "./routes/marketSignal.js";
 import { createModelCallRouter } from "./routes/modelCall.js";
 import { createModelsRouter } from "./routes/models.js";
 import { createRootRouter } from "./routes/root.js";
+import { createTabRunRouter } from "./routes/tabRun.js";
 import { requestIdMiddleware } from "./telemetry/requestId.js";
 import { createX402Middleware } from "./x402/middleware.js";
 
@@ -23,6 +24,7 @@ export function createApp(config: AppConfig) {
   app.use(createHealthRouter());
   app.use(createModelsRouter(config));
   app.use(createCapabilitiesRouter(config));
+  app.use(createTabRunRouter(config));
   app.use(createModelCallRouter(config, paymentMiddleware));
   app.use(createMarketSignalRouter(config, paymentMiddleware));
   app.use((req, _res, next) => {

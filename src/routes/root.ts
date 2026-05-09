@@ -11,11 +11,20 @@ export function createRootRouter(config: AppConfig): Router {
 
     res.status(200).json({
       ok: true,
-      service: "agentic-x402-router",
+      service: "tab",
+      backbone_service: "agentic-x402-router",
       status: "live",
-      description: "x402-paid AI/agent infrastructure gateway",
+      product: "Tab",
+      tagline: "The spend layer for AI agents.",
+      description: "Tab opens budgets for AI agents, routes spend requests through the existing x402-paid tool backbone, and returns receipts.",
       public_base_url: config.publicBaseUrl ?? null,
       endpoints: {
+        "POST /v1/tab/run": {
+          description: "Open a Tab, set a limit, auto-approve spend requests, collect receipts, and close the Tab with a trace",
+          price_usd: 0,
+          provider: "Tab",
+          discovery: "agent-run capability"
+        },
         "POST /v1/model-call": {
           description: "x402-paid Claude/model-call API for agents",
           price_usd: modelCallPrice,
@@ -31,7 +40,8 @@ export function createRootRouter(config: AppConfig): Router {
       },
       health_url: "/health",
       models_url: "/v1/models",
-      capabilities_url: "/v1/capabilities"
+      capabilities_url: "/v1/capabilities",
+      tab_run_url: "/v1/tab/run"
     });
   });
 

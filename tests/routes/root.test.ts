@@ -18,15 +18,20 @@ describe("GET /", () => {
   it("includes required top-level fields", async () => {
     const res = await request(app).get("/").expect(200);
     expect(res.body.ok).toBe(true);
-    expect(res.body.service).toBe("agentic-x402-router");
+    expect(res.body.service).toBe("tab");
+    expect(res.body.backbone_service).toBe("agentic-x402-router");
+    expect(res.body.product).toBe("Tab");
     expect(res.body.status).toBe("live");
+    expect(res.body.description).toMatch(/Tab/i);
     expect(res.body.description).toMatch(/x402/i);
   });
 
-  it("includes endpoint entries for both paid routes", async () => {
+  it("includes endpoint entries for Tab and both paid routes", async () => {
     const res = await request(app).get("/").expect(200);
+    expect(res.body.endpoints).toHaveProperty("POST /v1/tab/run");
     expect(res.body.endpoints).toHaveProperty("POST /v1/model-call");
     expect(res.body.endpoints).toHaveProperty("POST /v1/market-signal");
+    expect(res.body.endpoints["POST /v1/tab/run"].provider).toBe("Tab");
     expect(res.body.endpoints["POST /v1/model-call"].price_usd).toBeTypeOf("number");
     expect(res.body.endpoints["POST /v1/market-signal"].price_usd).toBeTypeOf("number");
   });
@@ -36,6 +41,7 @@ describe("GET /", () => {
     expect(res.body.health_url).toBe("/health");
     expect(res.body.models_url).toBe("/v1/models");
     expect(res.body.capabilities_url).toBe("/v1/capabilities");
+    expect(res.body.tab_run_url).toBe("/v1/tab/run");
   });
 
   it("shows mock provider when no ANTHROPIC_API_KEY", async () => {

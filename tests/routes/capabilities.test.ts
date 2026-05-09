@@ -18,15 +18,28 @@ describe("GET /v1/capabilities", () => {
   it("includes required top-level fields", async () => {
     const res = await request(app).get("/v1/capabilities").expect(200);
     expect(res.body.ok).toBe(true);
-    expect(res.body.service).toBe("agentic-x402-router");
+    expect(res.body.service).toBe("tab");
+    expect(res.body.backbone_service).toBe("agentic-x402-router");
+    expect(res.body.product).toBe("Tab");
     expect(typeof res.body.x402_enabled).toBe("boolean");
     expect(typeof res.body.network).toBe("string");
   });
 
-  it("returns two capabilities", async () => {
+  it("returns three capabilities", async () => {
     const res = await request(app).get("/v1/capabilities").expect(200);
     expect(Array.isArray(res.body.capabilities)).toBe(true);
-    expect(res.body.capabilities).toHaveLength(2);
+    expect(res.body.capabilities).toHaveLength(3);
+  });
+
+  it("Tab agent-run capability has correct shape", async () => {
+    const res = await request(app).get("/v1/capabilities").expect(200);
+    const tab = res.body.capabilities.find((c: { id: string }) => c.id === "tab-agent-run");
+    expect(tab).toBeDefined();
+    expect(tab.method).toBe("POST");
+    expect(tab.route).toBe("/v1/tab/run");
+    expect(tab.price_usd).toBe(0);
+    expect(tab.payment).toBe("none");
+    expect(tab.description).toMatch(/spend-control/i);
   });
 
   it("model-call capability has correct shape", async () => {

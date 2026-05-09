@@ -10,6 +10,8 @@
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "demo:tab": "tsx examples/run-tab.ts",
+    "demo:tab:budget": "tsx examples/run-tab.ts --scenario budget",
     "buyer:market-signal": "tsx examples/buyer-market-signal.ts",
     "buyer:model-call": "tsx examples/buyer-model-call.ts"
   },

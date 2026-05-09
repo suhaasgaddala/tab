@@ -11,11 +11,23 @@ export function createCapabilitiesRouter(config: AppConfig): Router {
 
     res.status(200).json({
       ok: true,
-      service: "agentic-x402-router",
+      service: "tab",
+      backbone_service: "agentic-x402-router",
+      product: "Tab",
+      tagline: "The spend layer for AI agents.",
       x402_enabled: config.x402.enabled,
       network: config.x402.network,
       public_base_url: config.publicBaseUrl ?? null,
       capabilities: [
+        {
+          id: "tab-agent-run",
+          method: "POST",
+          route: "/v1/tab/run",
+          price_usd: 0,
+          provider: "Tab",
+          payment: "none",
+          description: "agent-run spend-control layer: open a Tab, set a limit, create spend requests, auto-approve policy-safe calls, write receipts, and close the Tab"
+        },
         {
           id: "model-call",
           method: "POST",
