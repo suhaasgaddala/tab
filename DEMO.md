@@ -25,6 +25,45 @@ Budget-constrained scenario:
 npm run demo:tab:budget
 ```
 
+## Browser Demo
+
+Run the API:
+
+```bash
+npm install
+npm --prefix frontend install
+npm run dev
+```
+
+Run the frontend in a second terminal:
+
+```bash
+npm run dev:frontend
+```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+The browser demo calls `POST /v1/tab/run` with JSON and renders the goal, budget, plan, spend requests, receipts, final answer, confidence, and run status.
+
+Production-style local demo:
+
+```bash
+npm run build:all
+npm start
+```
+
+Open:
+
+```text
+http://localhost:3000/demo
+```
+
+`GET /` remains the JSON service root. `/demo` is only the built browser interface.
+
 Expected happy-path summary:
 
 ```text

@@ -3,6 +3,7 @@ import type { AppConfig } from "./config.js";
 import { HttpError } from "./errors/httpError.js";
 import { errorHandler } from "./errors/errorHandler.js";
 import { createCapabilitiesRouter } from "./routes/capabilities.js";
+import { createDemoRouter } from "./routes/demo.js";
 import { createHealthRouter } from "./routes/health.js";
 import { createMarketSignalRouter } from "./routes/marketSignal.js";
 import { createModelCallRouter } from "./routes/modelCall.js";
@@ -27,6 +28,7 @@ export function createApp(config: AppConfig) {
   app.use(createTabRunRouter(config));
   app.use(createModelCallRouter(config, paymentMiddleware));
   app.use(createMarketSignalRouter(config, paymentMiddleware));
+  app.use(createDemoRouter());
   app.use((req, _res, next) => {
     next(
       new HttpError({

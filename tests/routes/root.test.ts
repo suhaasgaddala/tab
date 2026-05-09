@@ -44,6 +44,12 @@ describe("GET /", () => {
     expect(res.body.tab_run_url).toBe("/v1/tab/run");
   });
 
+  it("serves the browser demo route without replacing root JSON", async () => {
+    const res = await request(app).get("/demo").expect(200).expect("content-type", /html/);
+    expect(res.text).toMatch(/Tab/i);
+    expect(res.text).toMatch(/demo|not built/i);
+  });
+
   it("shows mock provider when no ANTHROPIC_API_KEY", async () => {
     const res = await request(app).get("/").expect(200);
     expect(res.body.endpoints["POST /v1/model-call"].provider).toBe("mock");

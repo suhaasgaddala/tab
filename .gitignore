@@ -20,4 +20,7 @@ secrets.*
 # build / deps
 node_modules
 dist
+frontend/dist
 .DS_Store
+_incoming/
+*.zip

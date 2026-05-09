@@ -10,7 +10,20 @@ The existing x402-paid router remains the backbone for paid tool access. The hac
 
 ```bash
 npm install
+npm --prefix frontend install
 npm run dev
+```
+
+For the browser demo, run the frontend dev server in a second terminal:
+
+```bash
+npm run dev:frontend
+```
+
+Then open:
+
+```text
+http://localhost:5173
 ```
 
 Then run the deterministic Tab agent flow:
@@ -31,6 +44,19 @@ Or use the terminal demo:
 ```bash
 npm run demo:tab
 npm run demo:tab:budget
+```
+
+Production-style local run:
+
+```bash
+npm run build:all
+npm start
+```
+
+Then open:
+
+```text
+http://localhost:3000/demo
 ```
 
 ## Set a Limit
@@ -75,6 +101,8 @@ Skipped or denied requests do not create receipts.
 
 `POST /v1/tab/run` returns the final answer, total spent, remaining budget, spend requests, receipts, status, and confidence.
 
+The browser demo at `/demo` calls the same endpoint with JSON. It does not use SSE and it does not claim live onchain payment settlement inside `/v1/tab/run`; the run is deterministic by default for reliable judging.
+
 The deterministic happy path returns:
 
 - total spent: `$0.021`
@@ -100,4 +128,6 @@ When x402 is enabled, those paid routes still run through the existing payment m
 npm run typecheck
 npm test
 npm run build
+npm run build:frontend
+npm run build:all
 ```
