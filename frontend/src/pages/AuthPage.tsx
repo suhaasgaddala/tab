@@ -82,7 +82,28 @@ function AuthForm({ mode }: { mode: "login" | "signup" }) {
     }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
+
+    // ── SIGNUP ────────────────────────────────────────────────────────────────
+    if (isSignup) {
+      // const { error: signUpError } = await supabase.auth.signUp({
+      //   email,
+      //   password,
+      //   options: { data: { company_name: company } },
+      // });
+      // if (signUpError) { setError(signUpError.message); setLoading(false); return; }
+      await new Promise((r) => setTimeout(r, 900));
+    }
+
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
+    if (!isSignup) {
+      // const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      // if (signInError) { setError(signInError.message); setLoading(false); return; }
+      await new Promise((r) => setTimeout(r, 900));
+    }
+
+    // ── Set session flag (replace with Supabase session when wired up) ────────
+    localStorage.setItem("tab_authed", "true");
+
     setLoading(false);
     navigate("/dashboard");
   };

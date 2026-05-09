@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface TopNavProps {
   onNewRun: () => void;
@@ -12,6 +12,14 @@ const NAV_LINKS = [
 ];
 
 export function TopNav({ onNewRun }: TopNavProps) {
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    // await supabase.auth.signOut();
+    localStorage.removeItem("tab_authed");
+    navigate("/login");
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -40,12 +48,12 @@ export function TopNav({ onNewRun }: TopNavProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            to="/"
+          <button
+            onClick={signOut}
             className="hidden text-xs font-medium text-zinc-600 transition-colors hover:text-zinc-300 sm:block"
           >
-            ← Home
-          </Link>
+            Sign out
+          </button>
           <button
             onClick={onNewRun}
             className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-400 transition-all hover:border-amber-500/50 hover:bg-amber-500/20"
