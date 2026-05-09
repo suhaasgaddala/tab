@@ -11,13 +11,6 @@ const HAPPY_PATH: TabRunRequest = {
   budget_usd: 0.05
 };
 
-const BUDGET_PATH: TabRunRequest = {
-  goal: "Analyze USDC liquidity on Base with a 2 cent budget.",
-  token: USDC_BASE,
-  chain: "base",
-  budget_usd: 0.0205
-};
-
 interface GoalFormProps {
   isLoading: boolean;
   onSubmit: (input: TabRunRequest) => void;
@@ -28,13 +21,6 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
   const [token, setToken] = useState(HAPPY_PATH.token ?? "");
   const [budget, setBudget] = useState(HAPPY_PATH.budget_usd);
   const [maxToolCalls, setMaxToolCalls] = useState(3);
-
-  const applyScenario = (scenario: TabRunRequest) => {
-    setGoal(scenario.goal);
-    setToken(scenario.token ?? "");
-    setBudget(scenario.budget_usd);
-    setMaxToolCalls(scenario.max_tool_calls ?? 3);
-  };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -98,21 +84,21 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
               <label htmlFor="budget" className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
                 Set a limit
               </label>
-              <span className="font-mono text-sm font-bold text-amber-700">${budget.toFixed(budget === 0.0205 ? 4 : 3)}</span>
+              <span className="font-mono text-sm font-bold text-amber-700">${budget.toFixed(3)}</span>
             </div>
             <input
               id="budget"
               type="range"
-              min={0}
-              max={1}
-              step={1}
-              value={budget === 0.0205 ? 0 : 1}
-              onChange={(event) => setBudget(Number(event.target.value) === 0 ? 0.0205 : 0.05)}
+              min={0.005}
+              max={0.1}
+              step={0.001}
+              value={budget}
+              onChange={(event) => setBudget(parseFloat(event.target.value))}
               className="w-full"
             />
             <div className="mt-1 flex justify-between font-mono text-[10px] text-slate-400">
-              <span>$0.0205</span>
-              <span>$0.050</span>
+              <span>$0.005</span>
+              <span>$0.100</span>
             </div>
           </div>
 
@@ -133,23 +119,6 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
               className="h-[46px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 font-mono text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
             />
           </div>
-        </div>
-
-        <div className="grid gap-2 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => applyScenario(HAPPY_PATH)}
-            className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-left text-xs font-semibold text-indigo-700 transition hover:border-indigo-200 hover:bg-indigo-100"
-          >
-            Happy path: 5 cent Tab
-          </button>
-          <button
-            type="button"
-            onClick={() => applyScenario(BUDGET_PATH)}
-            className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-left text-xs font-semibold text-amber-800 transition hover:border-amber-200 hover:bg-amber-100"
-          >
-            Budget limit: 2 cent Tab
-          </button>
         </div>
 
         <button
