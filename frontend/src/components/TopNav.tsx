@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 interface TopNavProps {
   onNewRun: () => void;
 }
@@ -29,6 +31,13 @@ export function TopNav({ onNewRun }: TopNavProps) {
             Close the Tab
           </a>
         </nav>
+
+        <Link
+          to="/"
+          className="text-xs font-semibold text-slate-500 hover:text-slate-950 transition-colors"
+        >
+          ← Home
+        </Link>
       </div>
     </header>
   );
