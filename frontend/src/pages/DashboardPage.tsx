@@ -264,6 +264,68 @@ function PolicyEnginePanel() {
   );
 }
 
+function formatPayloadUsd(value: number) {
+  return `$${value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")}`;
+}
+
+function RequestPayloadCard({
+  input,
+  status,
+}: {
+  input: TabRunRequest;
+  status: "loading" | "success" | "error" | "submitted";
+}) {
+  const statusLabel = {
+    loading: "Awaiting response",
+    success: "Response shown",
+    error: "Request failed",
+    submitted: "Latest submitted",
+  }[status];
+
+  return (
+    <section className="rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-card">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
+            Request payload
+          </p>
+          <p className="mt-0.5 font-mono text-[10px] text-slate-600">POST /v1/tab/run</p>
+        </div>
+        <span className="rounded-full border border-slate-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500">
+          {statusLabel}
+        </span>
+      </div>
+
+      <dl className="space-y-3 text-xs">
+        <div className="flex items-center justify-between gap-4">
+          <dt className="text-slate-500">budget_usd</dt>
+          <dd className="font-mono font-bold text-amber-400">{input.budget_usd}</dd>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <dt className="text-slate-500">max_tool_calls</dt>
+          <dd className="font-mono font-bold text-slate-200">{input.max_tool_calls}</dd>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <dt className="text-slate-500">chain</dt>
+          <dd className="font-mono font-bold text-slate-200">{input.chain}</dd>
+        </div>
+        <div>
+          <dt className="text-slate-500">token</dt>
+          <dd className="mt-1 break-all font-mono text-[11px] text-slate-300">{input.token}</dd>
+        </div>
+        <div>
+          <dt className="text-slate-500">goal</dt>
+          <dd className="mt-1 leading-relaxed text-slate-300">{input.goal}</dd>
+        </div>
+      </dl>
+
+      <p className="mt-4 border-t border-slate-700 pt-3 text-xs leading-relaxed text-slate-500">
+        Opened with budget {formatPayloadUsd(input.budget_usd)} and max tool calls {input.max_tool_calls}.
+      </p>
+    </section>
+  );
+}
+
 // ─── Hero section ─────────────────────────────────────────────────────────────
 function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
   return (
@@ -453,26 +515,25 @@ export default function DashboardPage() {
         <aside className="mt-6 space-y-5 lg:mt-0 lg:sticky lg:top-20 lg:self-start">
           {result ? (
             <>
+              {lastInput && <RequestPayloadCard input={lastInput} status="success" />}
               <BudgetMeter
                 startingBudgetUsd={result.startingBudgetUsd}
                 totalSpentUsd={result.totalSpentUsd}
                 remainingBudgetUsd={result.remainingBudgetUsd}
               />
-              <RunSummary result={result} />
+              <RunSummary result={result} request={lastInput} />
               <ReceiptLedger receipts={result.receipts} />
             </>
           ) : (
             <>
+              {lastInput && (
+                <RequestPayloadCard
+                  input={lastInput}
+                  status={state.status === "loading" ? "loading" : state.status === "error" ? "error" : "submitted"}
+                />
+              )}
               <ToolCatalogPanel />
               <PolicyEnginePanel />
-              {lastInput && (
-                <section className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">
-                    Last submitted
-                  </p>
-                  <p className="text-xs leading-relaxed text-slate-400">{lastInput.goal}</p>
-                </section>
-              )}
             </>
           )}
         </aside>

@@ -13,7 +13,7 @@ export type PolicyResult =
 
 export interface TabRunRequest {
   goal: string;
-  token?: string;
+  token: string;
   chain: TabChain;
   budget_usd: number;
   max_tool_calls?: number;

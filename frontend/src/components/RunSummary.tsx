@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import type { TabRunResult } from "../lib/types";
+import type { TabRunRequest, TabRunResult } from "../lib/types";
 
 const CONFIDENCE_META: Record<
   TabRunResult["confidence"],
@@ -45,17 +45,25 @@ const CONFIDENCE_META: Record<
 
 interface RunSummaryProps {
   result: TabRunResult;
+  request: TabRunRequest | null;
 }
 
-export function RunSummary({ result }: RunSummaryProps) {
+function formatUsd(value: number, precision = 4) {
+  return `$${value.toFixed(precision).replace(/0+$/, "").replace(/\.$/, "")}`;
+}
+
+export function RunSummary({ result, request }: RunSummaryProps) {
   const [open, setOpen] = useState(false);
   const meta = CONFIDENCE_META[result.confidence];
 
   const stats = [
     { label: "Agent",          value: result.agent },
+    { label: "Opened with budget", value: request ? formatUsd(request.budget_usd) : formatUsd(result.startingBudgetUsd) },
+    { label: "Max tool calls", value: request?.max_tool_calls ? String(request.max_tool_calls) : "not set" },
     { label: "Spend requests", value: String(result.spendRequests.length) },
     { label: "Receipts",       value: String(result.receipts.length) },
-    { label: "Total spent",    value: `$${result.totalSpentUsd.toFixed(3)}` },
+    { label: "Actual spent",   value: formatUsd(result.totalSpentUsd, 3) },
+    { label: "Remaining",      value: formatUsd(result.remainingBudgetUsd, 4) },
   ];
 
   return (

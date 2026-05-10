@@ -16,7 +16,7 @@ const POLICY_META: Record<PolicyResult, { label: string; color: string }> = {
   category_not_allowed:      { label: "Category not in allowed list",                        color: "text-red-400" },
   max_price_per_call_exceeded:{ label: "Price exceeds per-call limit",                       color: "text-red-400" },
   insufficient_budget:       { label: "Skipped — insufficient remaining budget",             color: "text-slate-500" },
-  max_tool_calls_exceeded:   { label: "Skipped — max tool calls reached",                    color: "text-slate-500" },
+  max_tool_calls_exceeded:   { label: "Max tool calls reached",                              color: "text-slate-500" },
   dependency_not_met:        { label: "Skipped — required market-signal was not approved",   color: "text-slate-500" },
 };
 
@@ -73,9 +73,16 @@ export function SpendRequestCard({ request, index }: SpendRequestCardProps) {
       <div className="border-t border-slate-700/60 px-4 py-3">
         <p className="text-[10px] text-slate-600 mb-1.5">Policy verdict</p>
         {policy ? (
-          <p className={`font-mono text-[11px] font-semibold ${policy.color}`}>
-            {policy.label}
-          </p>
+          <>
+            <p className={`font-mono text-[11px] font-semibold ${policy.color}`}>
+              {policy.label}
+            </p>
+            {request.policyExplanation && (
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+                {request.policyExplanation}
+              </p>
+            )}
+          </>
         ) : (
           <p className="font-mono text-[11px] text-slate-600">
             {request.policyExplanation ?? "pending evaluation"}
