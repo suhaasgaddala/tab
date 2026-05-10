@@ -31,16 +31,20 @@ export function TopNav({ onNewRun }: TopNavProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-[#FFF8F2]/12 bg-[#241C19]/88 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <button onClick={onNewRun} className="group flex cursor-pointer items-center gap-2.5 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/60" type="button">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,88,72,0.22)] transition-all group-hover:shadow-[0_18px_36px_rgba(255,88,72,0.34)]"
-            style={{ background: "#FF5848" }}>
-            T
+        <button
+          onClick={() => {
+            onNewRun();
+            navigate("/dashboard");
+          }}
+          className="group flex cursor-pointer items-baseline gap-3 rounded-xl outline-none transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-[#FF5848]/60"
+          type="button"
+          aria-label="Tab dashboard home"
+        >
+          <span className="text-[2rem] font-semibold leading-none tracking-[-0.07em] text-[#FFF8F2]">
+            Tab
           </span>
-          <span className="hidden flex-col text-left sm:flex">
-            <span className="text-sm font-semibold tracking-tight text-[#FFF8F2]">Tab</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#FFF8F2]/42">
-              spend layer
-            </span>
+          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-[#FFF8F2]/42 sm:inline">
+            Spend layer
           </span>
         </button>
 

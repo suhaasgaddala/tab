@@ -308,7 +308,7 @@ function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
 export default function AuthPage({ mode }: AuthPageProps) {
   return (
-    <div className="min-h-screen bg-[#FFF8F2] p-4 lg:grid lg:grid-cols-[minmax(420px,0.48fr)_minmax(0,0.72fr)] lg:gap-4">
+    <div id="top" className="min-h-screen bg-[#FFF8F2] p-4 lg:grid lg:grid-cols-[minmax(420px,0.48fr)_minmax(0,0.72fr)] lg:gap-4">
       <AuthForm mode={mode} />
       <AuthVisualPanel />
     </div>

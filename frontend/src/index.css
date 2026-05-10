@@ -185,6 +185,7 @@ input[type="range"]::-moz-range-thumb {
     inset 30px 22px 70px rgba(255, 255, 255, 0.06),
     inset -34px -18px 70px rgba(0, 0, 0, 0.23),
     0 30px 80px rgba(0, 0, 0, 0.24);
+  transform: translate3d(0, 0, 0);
 }
 
 .landing-inner-ring {
@@ -206,6 +207,15 @@ input[type="range"]::-moz-range-thumb {
     inset 22px 0 34px rgba(255, 248, 242, 0.28),
     inset -22px 0 34px rgba(93, 45, 33, 0.28),
     0 24px 70px rgba(45, 23, 17, 0.28);
+  transform: translate3d(0, 0, 0);
+}
+
+.landing-hero-main {
+  contain: paint;
+}
+
+.landing-phone-stage > div {
+  will-change: transform;
 }
 
 .landing-budget-track {
@@ -229,6 +239,96 @@ input[type="range"]::-moz-range-thumb {
 @keyframes landing-budget-shimmer {
   0% { transform: translateX(-100%); }
   55%, 100% { transform: translateX(120%); }
+}
+
+@media (max-width: 1280px) {
+  .landing-ring {
+    right: -4%;
+    min-width: 540px;
+    width: 50vw;
+  }
+
+  .landing-inner-ring {
+    right: 8%;
+    min-width: 315px;
+  }
+
+  .landing-ribbed-arc {
+    left: 46%;
+    min-width: 190px;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 1024px) {
+  .landing-hero-grid {
+    align-items: center;
+  }
+
+  .landing-hero-copy {
+    margin-top: 0 !important;
+    padding-top: 3.75rem !important;
+    transform: translateY(-3.5rem);
+  }
+
+  .landing-hero-title {
+    font-size: clamp(3.65rem, 5.5vw, 5.2rem) !important;
+    line-height: 0.96 !important;
+  }
+
+  .landing-hero-subtitle {
+    margin-top: 1.35rem !important;
+    font-size: 1.15rem !important;
+    line-height: 1.42 !important;
+  }
+
+  .landing-hero-actions {
+    margin-top: 1.65rem !important;
+    gap: 1rem !important;
+  }
+
+  .landing-phone-stage {
+    padding-top: 4.25rem !important;
+    transform: translateX(1rem) scale(0.86);
+    transform-origin: top right;
+  }
+
+  .landing-ribbed-arc {
+    top: -15%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .landing-phone-stage {
+    min-height: 520px;
+  }
+
+  .landing-ring,
+  .landing-inner-ring,
+  .landing-ribbed-arc {
+    opacity: 0.72;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-phone-stage {
+    min-height: 500px;
+    padding-bottom: 5rem;
+  }
+
+  .landing-ring {
+    right: -62%;
+    min-width: 460px;
+  }
+
+  .landing-inner-ring {
+    right: -16%;
+    min-width: 270px;
+  }
+
+  .landing-ribbed-arc {
+    left: 58%;
+    min-width: 150px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

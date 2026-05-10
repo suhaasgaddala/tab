@@ -379,7 +379,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
                 onClick={onRunDemo}
                 className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white shadow-glow transition-all hover:opacity-90 cursor-pointer" style={{ background: "#FF5848" }}
               >
-                Run Agent Demo
+                Run Agent
                 <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
                   <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.268V3.732Z" />
                 </svg>
