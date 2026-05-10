@@ -32,11 +32,12 @@ export function TopNav({ onNewRun }: TopNavProps) {
     <header className="sticky top-0 z-50 border-b border-slate-700/60 bg-slate-900/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <button onClick={onNewRun} className="group flex items-center gap-2.5 cursor-pointer" type="button">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500 font-mono text-sm font-black text-slate-950 transition-all group-hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white transition-all group-hover:shadow-glow"
+            style={{ background: "#FF5848" }}>
             T
           </span>
           <span className="hidden flex-col text-left sm:flex">
-            <span className="text-sm font-bold tracking-tight text-slate-50">Tab</span>
+            <span className="text-sm font-semibold tracking-tight text-[#FFF8F2]">Tab</span>
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-500">
               spend layer
             </span>

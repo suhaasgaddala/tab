@@ -59,15 +59,15 @@ input[type="range"]::-webkit-slider-thumb {
   height: 1.4rem;
   border-radius: 999px;
   border: 2.5px solid #0f172a;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3), 0 0 12px rgba(34, 197, 94, 0.25);
+  background: #FF5848;
+  box-shadow: 0 0 0 3px rgba(255, 88, 72, 0.3), 0 0 12px rgba(255, 88, 72, 0.25);
   cursor: pointer;
   transition: box-shadow 0.15s;
   margin-top: -0.45rem;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.35), 0 0 18px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 0 5px rgba(255, 88, 72, 0.35), 0 0 18px rgba(255, 88, 72, 0.35);
 }
 
 input[type="range"]::-moz-range-track {
@@ -81,8 +81,8 @@ input[type="range"]::-moz-range-thumb {
   height: 1.4rem;
   border-radius: 999px;
   border: 2.5px solid #0f172a;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+  background: #FF5848;
+  box-shadow: 0 0 0 3px rgba(255, 88, 72, 0.3);
   cursor: pointer;
 }
 

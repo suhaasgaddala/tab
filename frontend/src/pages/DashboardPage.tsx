@@ -36,17 +36,17 @@ function StagedLoader() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      className="overflow-hidden rounded-2xl border border-green-500/10 bg-slate-800/60"
+      className="overflow-hidden rounded-2xl border border-[#FF5848]/10 bg-slate-800/60"
     >
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-slate-700/60 px-5 py-4">
         <motion.span
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-green-400"
+          className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-[#FF5848]"
         />
         <div>
-          <p className="text-sm font-bold text-green-400">Tab open — agent running</p>
+          <p className="text-sm font-bold text-[#FF5848]">Tab open — agent running</p>
           <p className="font-mono text-xs text-slate-500">
             POST /v1/tab/run · waiting for spend trace
           </p>
@@ -74,7 +74,7 @@ function StagedLoader() {
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/15 text-green-400"
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[#FF5848]" style={{ background: "rgba(255,88,72,0.15)" }}
                   >
                     <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
                       <path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
@@ -84,7 +84,7 @@ function StagedLoader() {
                   <motion.span
                     animate={{ rotate: 360 }}
                     transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                    className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-green-400"
+                    className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-[#FF5848]"
                   />
                 ) : (
                   <span className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-700 font-mono text-[9px] text-slate-600">
@@ -114,7 +114,7 @@ function StagedLoader() {
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="shrink-0 font-mono text-[9px] text-green-700"
+                  className="shrink-0 font-mono text-[9px] text-[#FF5848]/50"
                 >
                   done
                 </motion.span>
@@ -286,7 +286,7 @@ function RequestPayloadCard({
     <section className="rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-card">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
             Request payload
           </p>
           <p className="mt-0.5 font-mono text-[10px] text-slate-600">POST /v1/tab/run</p>
@@ -331,8 +331,8 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
   return (
     <section className="relative overflow-hidden border-b border-slate-700/60 pb-14 pt-10">
       <div className="tab-grid absolute inset-0 opacity-25" />
-      <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-green-500/5 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full bg-green-500/4 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.05)" }} />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.04)" }} />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         {/* Badges */}
@@ -352,10 +352,10 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.06 }}
-              className="font-mono text-5xl font-extrabold leading-[1.06] tracking-tight text-slate-50 sm:text-6xl lg:text-[4.5rem]"
+              className="text-5xl font-semibold leading-[1.06] tracking-tight text-[#FFF8F2] sm:text-6xl lg:text-[4.5rem]" style={{ letterSpacing: "-0.065em" }}
             >
               The spend layer<br />
-              for <span className="text-green-400">AI agents.</span>
+              for <span style={{ color: "#FF5848" }}>AI agents.</span>
             </motion.h1>
 
             <motion.p
@@ -377,7 +377,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
             >
               <button
                 onClick={onRunDemo}
-                className="inline-flex items-center gap-2 rounded-xl bg-green-500 px-6 py-3 text-sm font-bold text-slate-950 shadow-[0_0_24px_rgba(34,197,94,0.2)] transition-all hover:bg-green-400 hover:shadow-[0_0_36px_rgba(34,197,94,0.35)] cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white shadow-glow transition-all hover:opacity-90 cursor-pointer" style={{ background: "#FF5848" }}
               >
                 Run Agent Demo
                 <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
@@ -411,7 +411,8 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
                 key={item.step}
                 className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5"
               >
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green-500/20 bg-green-500/8 font-mono text-[10px] font-bold text-green-400">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold"
+                  style={{ border: "1px solid rgba(255,88,72,0.25)", background: "rgba(255,88,72,0.08)", color: "#FF5848" }}>
                   {item.step}
                 </span>
                 <p className="text-xs text-slate-400">{item.label}</p>
@@ -487,7 +488,7 @@ export default function DashboardPage() {
                 <section id="requests" className="space-y-3">
                   <div className="flex items-end justify-between">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
                         Spend Requests
                       </p>
                       <h2 className="mt-0.5 text-base font-bold text-slate-50">

@@ -21,7 +21,7 @@ function AnimatedUsd({ value }: { value: number }) {
 
 export function BudgetMeter({ startingBudgetUsd, totalSpentUsd, remainingBudgetUsd }: BudgetMeterProps) {
   const used = startingBudgetUsd > 0 ? Math.min(100, (totalSpentUsd / startingBudgetUsd) * 100) : 0;
-  const barColor = used < 50 ? "#22c55e" : used < 85 ? "#f59e0b" : "#ef4444";
+  const barColor = used < 50 ? "#FF5848" : used < 85 ? "#f59e0b" : "#ef4444";
 
   return (
     <motion.section

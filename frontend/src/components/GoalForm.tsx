@@ -74,7 +74,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10";
+    "w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition focus:border-[#FF5848]/50 focus:ring-2 focus:ring-[#FF5848]/10";
 
   return (
     <motion.form
@@ -87,8 +87,8 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
       {/* ── Scenario presets ── */}
       <div className="border-b border-slate-700 px-5 py-4">
         <div className="mb-3 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse-slow rounded-full bg-green-400" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-green-400">
+          <span className="h-1.5 w-1.5 animate-pulse-slow rounded-full" style={{ background: "#FF5848" }} />
+          <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#FF5848" }}>
             Reproducible judging mode
           </span>
         </div>
@@ -103,7 +103,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
                 onClick={() => applyPreset(key)}
                 className={`rounded-xl border px-3.5 py-3 text-left transition-all cursor-pointer ${
                   active
-                    ? "border-green-500/40 bg-green-500/8"
+                    ? "border-[#FF5848]/40 bg-[#FF5848]/8"
                     : "border-slate-700 bg-slate-900 hover:border-slate-600"
                 }`}
               >
@@ -222,7 +222,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
 
         <section className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
               Request payload
             </p>
             <span className="font-mono text-[10px] text-slate-600">POST /v1/tab/run</span>
@@ -254,14 +254,14 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
         <button
           type="submit"
           disabled={!requestPayload.goal || !requestPayload.token || isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-[0_0_20px_rgba(34,197,94,0.15)] transition-all hover:bg-green-400 hover:shadow-[0_0_32px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-white shadow-glow transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer" style={{ background: "#FF5848" }}
         >
           {isLoading ? (
             <>
               <motion.span
                 animate={{ rotate: 360 }}
                 transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                className="h-4 w-4 rounded-full border-2 border-green-900 border-t-slate-950"
+                className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white"
               />
               Opening Tab...
             </>

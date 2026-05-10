@@ -4,15 +4,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Fira Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
         mono: ["Fira Code", "ui-monospace", "SFMono-Regular", "monospace"]
       },
       boxShadow: {
-        card:      "0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4)",
-        "card-lg": "0 24px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.5)",
-        glow:      "0 0 28px rgba(34,197,94,0.2)",
-        "glow-em": "0 0 28px rgba(34,197,94,0.15)",
-        "glow-amber": "0 0 28px rgba(245,158,11,0.18)"
+        card:        "0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4)",
+        "card-lg":   "0 24px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.5)",
+        glow:        "0 0 28px rgba(255,88,72,0.22)",
+        "glow-em":   "0 0 28px rgba(255,88,72,0.14)",
+        "glow-amber":"0 0 28px rgba(245,158,11,0.18)"
       },
       animation: {
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
