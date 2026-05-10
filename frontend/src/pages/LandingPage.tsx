@@ -1,889 +1,494 @@
-import { AnimatePresence, motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  ArrowRight,
+  BadgeCheck,
+  ChevronDown,
+  CircleDollarSign,
+  ClipboardList,
+  FileText,
+  Globe2,
+  Home,
+  PlusCircle,
+  ReceiptText,
+  Send,
+  Settings,
+  ShieldCheck,
+  SlidersHorizontal,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTabRun } from "../hooks/useTabRun";
-import type { TabRunRequest, TabRunResult } from "../lib/types";
 
-// ─── Scroll-reveal ────────────────────────────────────────────────────────────
-function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+const navItems = [
+  { label: "Product", chevron: true },
+  { label: "Developers" },
+  { label: "Use Cases", chevron: true },
+  { label: "Docs" },
+  { label: "Pricing" },
+];
+
+const featureChips = [
+  { label: "Budget controls", Icon: ShieldCheck },
+  { label: "Receipt ledger", Icon: ReceiptText },
+  { label: "Policy approvals", Icon: BadgeCheck },
+];
+
+const workflowSteps = [
+  { label: "Open a Tab", Icon: PlusCircle },
+  { label: "Set a limit", Icon: SlidersHorizontal },
+  { label: "Spend request", Icon: Send },
+  { label: "Auto-approved", Icon: ShieldCheck },
+  { label: "Receipt", Icon: FileText },
+];
+
+const spendRequests = [
+  {
+    tool: "OpenAI API",
+    detail: "gpt-4o · Responses API",
+    amount: "$0.421",
+    status: "Auto-approved",
+    Icon: CircleDollarSign,
+    tone: "approved",
+  },
+  {
+    tool: "Notion API",
+    detail: "Retrieve page · v2",
+    amount: "$0.0013",
+    status: "Auto-approved",
+    Icon: FileText,
+    tone: "approved",
+  },
+  {
+    tool: "Browser task",
+    detail: "Extract data · 3 steps",
+    amount: "$0.157",
+    status: "Pending",
+    Icon: Globe2,
+    tone: "pending",
+  },
+];
+
+const receipts = [
+  { tool: "OpenAI API", id: "apr_1N4...9k1", date: "2024-05-24", amount: "$1.24" },
+  { tool: "Notion API", id: "apr_1N3...7pQ", date: "2024-05-24", amount: "$1.29" },
+];
+
+const bottomNav = [
+  { label: "Overview", Icon: Home, active: true },
+  { label: "Requests", Icon: ClipboardList },
+  { label: "Receipts", Icon: ReceiptText },
+  { label: "Agents", Icon: UsersRound },
+  { label: "Settings", Icon: Settings },
+];
+
+function LandingNav() {
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+    <motion.header
+      initial={{ opacity: 0, y: -18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      className="absolute inset-x-0 top-0 z-50"
     >
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── Icons ────────────────────────────────────────────────────────────────────
-function IconArrow({ size = 4 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={`w-${size} h-${size}`}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-    </svg>
-  );
-}
-function IconCheck() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-    </svg>
-  );
-}
-function IconX() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-    </svg>
-  );
-}
-function IconLoader() {
-  return (
-    <motion.svg
-      viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-      className="w-4 h-4"
-      animate={{ rotate: 360 }}
-      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-    >
-      <path strokeLinecap="round" d="M12 2a10 10 0 0 1 10 10" />
-    </motion.svg>
-  );
-}
-
-// ─── Nav ─────────────────────────────────────────────────────────────────────
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 48);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-
-  return (
-    <nav className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "bg-slate-900/95 backdrop-blur-md border-b border-slate-700/60" : "bg-transparent"}`}>
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500 font-mono text-sm font-black text-slate-950 shadow-glow transition-shadow group-hover:shadow-[0_0_32px_rgba(34,197,94,0.35)]">
-            T
-          </span>
-          <span className="text-base font-bold tracking-tight text-slate-50">Tab</span>
+      <nav
+        className="mx-auto flex h-24 max-w-[1680px] items-center justify-between px-5 text-[#FFF8F2] sm:px-8 lg:px-[4.3vw]"
+        aria-label="Main navigation"
+      >
+        <Link
+          to="/"
+          className="rounded-xl text-[2rem] font-semibold leading-none tracking-[-0.06em] outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#FF6A5D]/70 sm:text-[2.55rem]"
+        >
+          Tab
         </Link>
 
-        <div className="hidden items-center gap-8 text-sm font-medium md:flex">
-          {[["How it works", "#workflow"], ["Demo", "#demo"], ["Compare", "#compare"]].map(([label, href]) => (
-            <a key={label as string} href={href as string} className="text-slate-400 hover:text-slate-50 transition-colors">
-              {label as string}
+        <div className="hidden items-center gap-9 text-[0.98rem] font-medium text-[#FFF8F2]/90 lg:flex">
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href="#"
+              className="group inline-flex items-center gap-1.5 rounded-md outline-none transition-opacity hover:opacity-75 focus-visible:ring-2 focus-visible:ring-[#FF6A5D]/70"
+            >
+              <span className="relative after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#FFF8F2]/70 after:transition-transform group-hover:after:scale-x-100">
+                {item.label}
+              </span>
+              {item.chevron && <ChevronDown className="h-3.5 w-3.5 opacity-80" strokeWidth={2.1} />}
             </a>
           ))}
         </div>
 
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Link
+            to="/login"
+            className="hidden rounded-lg px-2 py-2 text-[0.98rem] font-medium text-[#FFF8F2]/90 outline-none transition-opacity hover:opacity-75 focus-visible:ring-2 focus-visible:ring-[#FF6A5D]/70 sm:inline-flex"
+          >
+            Sign in
+          </Link>
+          <Link
+            to="/dashboard"
+            className="inline-flex h-12 items-center justify-center rounded-xl bg-[#FF5848] px-5 text-[0.98rem] font-semibold text-white shadow-[0_18px_42px_rgba(255,88,72,0.28)] outline-none transition-colors hover:bg-[#F05A4A] focus-visible:ring-2 focus-visible:ring-[#FFF8F2]/80 sm:h-14 sm:px-7"
+          >
+            Open a Tab
+          </Link>
+        </div>
+      </nav>
+    </motion.header>
+  );
+}
+
+function BackgroundSculpture() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div className="absolute inset-y-0 left-0 w-[56%] bg-[radial-gradient(circle_at_34%_48%,rgba(95,52,43,0.72),transparent_42%),linear-gradient(120deg,#2B211E_0%,#31231F_42%,#1E1917_100%)]" />
+      <div className="absolute inset-y-0 right-0 w-[54%] bg-[radial-gradient(circle_at_63%_40%,rgba(15,90,82,0.55),transparent_38%),linear-gradient(145deg,#0E4A43_0%,#123F3A_45%,#0B3430_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_22%,rgba(255,248,242,0.11),transparent_20%),linear-gradient(90deg,rgba(0,0,0,0.08),transparent_42%,rgba(255,255,255,0.05))]" />
+
+      <motion.div
+        className="landing-ribbed-arc absolute left-[45.5%] top-[-4%] h-[112vh] w-[19vw] min-w-[230px] rounded-[999px] opacity-95"
+        animate={{ y: [0, -12, 0] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <motion.div
+        className="landing-ring absolute right-[3.2%] top-[-21%] h-[114vh] w-[54vw] min-w-[610px] rounded-full"
+        animate={{ rotate: [0, 2.5, 0], x: [0, 8, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="landing-inner-ring absolute right-[11%] top-[19%] h-[57vh] w-[32vw] min-w-[360px] rounded-full"
+        animate={{ rotate: [0, -3, 0], y: [0, 8, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <div className="absolute right-[8.5%] top-[27%] h-[52vh] w-[30vw] min-w-[340px] rounded-full bg-[radial-gradient(circle_at_35%_35%,#F0B28C_0%,#D97955_58%,#A34B38_100%)] opacity-95 shadow-[inset_28px_18px_70px_rgba(255,248,242,0.22)]" />
+      <div className="absolute bottom-[-9%] right-[2.5%] h-[22vh] w-[51vw] min-w-[560px] rounded-[50%_50%_0_0] bg-[radial-gradient(circle_at_40%_18%,#F0B28C_0%,#E89A72_48%,#B86149_100%)] shadow-[inset_0_18px_50px_rgba(255,248,242,0.34),0_-24px_60px_rgba(43,33,30,0.28)]" />
+      <div className="absolute bottom-0 left-0 h-[16vh] w-full bg-[linear-gradient(180deg,transparent,#F0B28C_95%)] opacity-55" />
+    </div>
+  );
+}
+
+function HeroCopy() {
+  return (
+    <div className="relative z-20 max-w-[760px] pt-28 lg:-mt-8 lg:pt-8">
+      <motion.h1
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="text-[clamp(4.35rem,6.6vw,7.75rem)] font-semibold leading-[0.98] tracking-[-0.065em] text-[#FFF8F2] drop-shadow-[0_8px_28px_rgba(0,0,0,0.24)]"
+      >
+        The spend layer
+        <br />
+        for AI agents
+        <motion.span
+          className="ml-1 inline-block text-[#FF5848]"
+          animate={{ opacity: [1, 0.55, 1], scale: [1, 1.08, 1] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          .
+        </motion.span>
+      </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0, y: 26 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.28, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className="mt-8 max-w-[650px] text-[1.25rem] font-normal leading-[1.42] text-white/75 sm:text-[1.48rem]"
+      >
+        Tab lets autonomous agents buy paid internet
+        <br className="hidden sm:block" />
+        tools under a budget and return receipts for every call.
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 22 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45, duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+        className="mt-9 flex flex-col gap-6"
+      >
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-sm font-bold text-slate-950 shadow-glow transition-all hover:bg-green-400 hover:shadow-[0_0_32px_rgba(34,197,94,0.35)]"
+          className="group inline-flex h-[62px] w-fit items-center overflow-hidden rounded-xl bg-[#FF5848] text-[1.18rem] font-semibold text-white shadow-[0_18px_42px_rgba(255,88,72,0.27)] outline-none transition-colors hover:bg-[#F05A4A] focus-visible:ring-2 focus-visible:ring-[#FFF8F2]/80"
         >
-          Open a Tab <IconArrow />
-        </Link>
-      </div>
-    </nav>
-  );
-}
-
-// ─── Hero: Layered card cluster ───────────────────────────────────────────────
-function HeroCardCluster() {
-  const [phase, setPhase] = useState<0 | 1 | 2>(0);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 1800);
-    const t2 = setTimeout(() => setPhase(2), 3000);
-    const t3 = setTimeout(() => { setPhase(0); }, 5200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
-
-  useEffect(() => {
-    if (phase !== 0) return;
-    const t1 = setTimeout(() => setPhase(1), 1800);
-    const t2 = setTimeout(() => setPhase(2), 3000);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [phase]);
-
-  const spent = phase >= 1 ? 40 : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      className="relative w-full max-w-sm mx-auto lg:mx-0 lg:ml-auto"
-    >
-      {/* Back card: Budget overview (rotated behind) */}
-      <div
-        className="absolute inset-0 -rotate-3 -translate-x-2 translate-y-3 scale-[0.96] opacity-50 pointer-events-none"
-        aria-hidden
-      >
-        <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
-          <div className="px-5 py-4 border-b border-slate-700">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Session budget</p>
-          </div>
-          <div className="px-5 py-4">
-            <div className="h-1.5 rounded-full bg-slate-700 mb-3">
-              <div className="h-full w-2/5 rounded-full bg-green-500/50" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg border border-amber-500/10 bg-amber-500/5 p-2.5">
-                <p className="text-[10px] text-amber-600 mb-0.5">Spent</p>
-                <p className="font-mono text-base font-black text-amber-400">$0.020</p>
-              </div>
-              <div className="rounded-lg border border-green-500/10 bg-green-500/5 p-2.5">
-                <p className="text-[10px] text-green-600 mb-0.5">Left</p>
-                <p className="font-mono text-base font-black text-green-400">$0.030</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main card: Spend request */}
-      <div className="relative z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card-lg">
-        <div className="flex items-center gap-3 border-b border-slate-700 px-5 py-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-green-500/20 bg-green-500/10">
-            <span className="font-mono text-[10px] font-black text-green-400">AI</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-50">ResearchAgent</p>
-            <p className="text-[11px] text-slate-500 font-mono">spend request</p>
-          </div>
-          <AnimatePresence mode="wait">
-            {phase === 0 && (
-              <motion.span key="p" exit={{ opacity: 0, scale: 0.9 }}
-                className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-400">
-                Pending
-              </motion.span>
-            )}
-            {phase >= 1 && (
-              <motion.span key="a" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                className="rounded-full bg-green-500/10 border border-green-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-green-400">
-                Approved
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <div className="divide-y divide-slate-700/60 px-5">
-          {[["Tool", "market-signal", false], ["Provider", "DexScreener", false], ["Category", "market-data", false], ["Amount", "$0.020", true]].map(
-            ([label, val, hi]) => (
-              <div key={label as string} className="flex items-center justify-between py-3">
-                <span className="text-xs text-slate-500">{label as string}</span>
-                <span className={`font-mono text-xs font-semibold ${hi ? "text-amber-400" : "text-slate-300"}`}>{val as string}</span>
-              </div>
-            )
-          )}
-        </div>
-
-        <div className="px-5 pb-4 pt-2">
-          <AnimatePresence mode="wait">
-            {phase === 0 && (
-              <motion.div key="eval" exit={{ opacity: 0 }}
-                className="flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-700 px-3 py-2.5">
-                <motion.div className="h-3.5 w-3.5 rounded-full border-2 border-slate-500 border-t-green-400"
-                  animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }} />
-                <span className="text-xs text-slate-400">Evaluating policy...</span>
-              </motion.div>
-            )}
-            {phase >= 1 && (
-              <motion.div key="ok" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 rounded-xl border border-green-500/20 bg-green-500/10 px-3 py-2.5">
-                <span className="text-green-400 text-sm">✓</span>
-                <span className="text-xs font-semibold text-green-400">Policy approved</span>
-                <span className="ml-auto text-[10px] text-green-700 font-mono">within-budget</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Receipt chip — front layer, slides in */}
-      <AnimatePresence>
-        {phase === 2 && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, x: 12 }}
-            animate={{ opacity: 1, y: 0, x: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            className="relative z-20 mt-2.5 flex items-center gap-3 rounded-xl border border-green-500/20 bg-green-500/5 px-4 py-3 shadow-[0_0_16px_rgba(34,197,94,0.08)]"
-          >
-            <span className="text-[10px] font-black uppercase tracking-widest text-green-400">✓ Receipt</span>
-            <span className="font-mono text-[10px] text-slate-500">market-signal · $0.020 · x402 · base-sepolia</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Budget bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="relative z-10 mt-2.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3"
-      >
-        <div className="flex justify-between text-[11px] mb-2">
-          <span className="text-slate-500 font-mono">Session budget</span>
-          <span className="font-mono text-slate-300">
-            <AnimatePresence mode="wait">
-              <motion.span key={phase} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                ${(spent / 1000).toFixed(3)} / $0.050
-              </motion.span>
-            </AnimatePresence>
+          <span className="px-7">Open a Tab</span>
+          <span className="flex h-full w-[62px] items-center justify-center border-l border-white/24">
+            <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
           </span>
-        </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-700">
-          <motion.div
-            animate={{ width: `${spent}%` }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="h-full rounded-full bg-amber-500"
-          />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
+        </Link>
 
-// ─── Section 1: Hero ─────────────────────────────────────────────────────────
-function HeroSection() {
-  return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-slate-900">
-      <div className="tab-grid absolute inset-0 opacity-60" />
-      <div className="absolute -left-64 -top-64 h-[700px] w-[700px] rounded-full bg-green-500/5 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-48 right-[-12rem] h-[500px] w-[500px] rounded-full bg-green-500/4 blur-3xl pointer-events-none" />
-
-      <div className="relative mx-auto w-full max-w-7xl px-4 pb-16 pt-28 sm:px-6">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
-          {/* Copy */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/8 px-3.5 py-1.5"
+        <div className="flex flex-wrap gap-4">
+          {featureChips.map(({ label, Icon }) => (
+            <a
+              key={label}
+              href="#workflow"
+              className="group inline-flex h-11 items-center gap-3 rounded-xl border border-white/18 bg-white/[0.035] px-4 text-[0.96rem] font-semibold text-[#FFF8F2] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] outline-none backdrop-blur-sm transition-colors hover:border-[#FF6A5D]/65 hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-[#FF6A5D]/70"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse-slow" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-green-400">
-                The spend layer for AI agents
-              </span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-mono text-5xl font-extrabold leading-[1.04] tracking-tight text-slate-50 sm:text-6xl lg:text-7xl"
-            >
-              Agents can spend.{" "}
-              <span className="text-green-400">Tab</span>
-              <br />
-              makes them spend
-              <br />
-              intelligently.
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.22 }}
-              className="mt-7 max-w-xl text-lg leading-relaxed text-slate-400"
-            >
-              Tab lets autonomous agents buy paid internet tools under a budget
-              and return receipts for every call. Payment rails let agents pay —
-              Tab gives agents budgets, spend requests, approvals, and receipts.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.32 }}
-              className="mt-10 flex flex-wrap gap-4"
-            >
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-green-500 px-6 py-3.5 text-base font-bold text-slate-950 shadow-glow transition-all hover:bg-green-400 hover:shadow-[0_0_40px_rgba(34,197,94,0.35)]"
-              >
-                Open a Tab <IconArrow />
-              </Link>
-              <a
-                href="#workflow"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3.5 text-base font-semibold text-slate-300 transition-all hover:border-slate-500 hover:text-slate-50"
-              >
-                How it works
-              </a>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.55 }}
-              className="mt-12 flex flex-wrap items-center gap-12"
-            >
-              {[["100%", "Policy coverage"], ["<1ms", "Approval latency"], ["x402", "Payment rail"]].map(([val, label]) => (
-                <div key={label}>
-                  <p className="font-mono text-2xl font-extrabold text-slate-50">{val}</p>
-                  <p className="mt-0.5 text-sm text-slate-500">{label}</p>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Layered card cluster */}
-          <div className="hidden lg:block">
-            <HeroCardCluster />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Section 2: Workflow ──────────────────────────────────────────────────────
-const WORKFLOW_STEPS = [
-  { n: "01", label: "Open a Tab", desc: "Set a session budget for the agent run" },
-  { n: "02", label: "Set a limit", desc: "Hard cap on total spend for this run" },
-  { n: "03", label: "Spend request", desc: "Agent requests access to a paid tool" },
-  { n: "04", label: "Auto-approved", desc: "Policy engine validates within budget" },
-  { n: "05", label: "Receipt", desc: "Cryptographic proof via x402 rail" },
-  { n: "06", label: "Close the Tab", desc: "Session complete — full spend trace" },
-];
-
-function WorkflowSection() {
-  return (
-    <section id="workflow" className="border-y border-slate-700/60 bg-slate-900 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <FadeUp>
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">How Tab works</p>
-          <h2 className="font-mono text-3xl font-extrabold tracking-tight text-slate-50 sm:text-4xl">
-            From goal to receipt in one run.
-          </h2>
-        </FadeUp>
-
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {WORKFLOW_STEPS.map((step, i) => (
-            <FadeUp key={step.n} delay={i * 0.07}>
-              <div className="relative flex flex-col rounded-2xl border border-slate-700 bg-slate-800 p-5 h-full hover:border-slate-600 transition-colors">
-                {i < WORKFLOW_STEPS.length - 1 && (
-                  <span className="absolute -right-1.5 top-1/2 hidden -translate-y-1/2 text-slate-700 xl:block">›</span>
-                )}
-                <span className="mb-3 font-mono text-3xl font-black text-slate-700">{step.n}</span>
-                <p className="text-sm font-bold text-slate-100">{step.label}</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{step.desc}</p>
-              </div>
-            </FadeUp>
+              <Icon className="h-5 w-5 text-[#FFF8F2]/95 transition-colors group-hover:text-[#FF6A5D]" strokeWidth={1.9} />
+              {label}
+            </a>
           ))}
         </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function PhoneStatusBar() {
+  return (
+    <div className="flex h-9 items-center justify-between px-7 pt-2 text-[0.72rem] font-semibold text-[#17110F]">
+      <span>9:41</span>
+      <div className="absolute left-1/2 top-[13px] h-7 w-[88px] -translate-x-1/2 rounded-full bg-black shadow-[inset_12px_0_14px_rgba(255,255,255,0.08)]">
+        <span className="absolute right-[10px] top-[6px] h-[14px] w-[14px] rounded-full bg-[#0B1720] ring-2 ring-black">
+          <span className="absolute left-[3px] top-[3px] h-[4px] w-[4px] rounded-full bg-[#31546F]" />
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <span className="h-2.5 w-4 rounded-[3px] border border-black/80">
+          <span className="block h-full w-[70%] rounded-[2px] bg-black" />
+        </span>
+        <span className="h-2.5 w-3 rounded-sm border-t-2 border-black" />
+      </div>
+    </div>
+  );
+}
+
+function BudgetCard() {
+  return (
+    <section className="overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#FF5848_0%,#FF6A5D_45%,#FFA28D_100%)] p-4 text-white shadow-[0_18px_42px_rgba(255,88,72,0.25)]">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[0.78rem] font-medium text-white/86">Agent budget</p>
+          <p className="mt-1 text-[1.6rem] font-semibold tracking-[-0.04em]">$2,500.00</p>
+        </div>
+        <button className="mt-2 rounded-full bg-white/15 px-3 py-1 text-[0.62rem] font-medium text-white outline-none transition-colors hover:bg-white/22 focus-visible:ring-2 focus-visible:ring-white/75">
+          Monthly <ChevronDown className="ml-1 inline h-3 w-3" />
+        </button>
+      </div>
+      <div className="landing-budget-track mt-5 h-2 overflow-hidden rounded-full bg-white/36">
+        <div className="landing-budget-fill h-full w-[65%] rounded-full bg-white" />
+      </div>
+      <div className="mt-3 flex justify-between text-[0.65rem] font-semibold text-white/84">
+        <span>$1,620.42 used</span>
+        <span>$879.58 remaining</span>
       </div>
     </section>
   );
 }
 
-// ─── Section 3+4: Interactive Demo + Expense Report ──────────────────────────
-const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-const DEFAULT_INPUT: TabRunRequest = {
-  goal: "Analyze USDC liquidity on Base with a 5 cent budget.",
-  token: USDC_BASE,
-  chain: "base",
-  budget_usd: 0.05,
-  max_tool_calls: 3,
-};
-
-function StatusChip({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    "auto-approved": "bg-green-500/10 border-green-500/20 text-green-400",
-    approved:        "bg-green-500/10 border-green-500/20 text-green-400",
-    pending:         "bg-amber-500/10 border-amber-500/20 text-amber-400",
-    denied:          "bg-red-500/10   border-red-500/20   text-red-400",
-    skipped:         "bg-slate-500/10 border-slate-700    text-slate-400",
-  };
-  const s = styles[status] ?? styles["pending"];
-  const label = status === "auto-approved" ? "Auto-approved" : status;
+function MiniCards() {
   return (
-    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${s}`}>
-      {label}
-    </span>
+    <div className="mt-3 grid grid-cols-2 gap-2.5">
+      <div className="rounded-[14px] border border-[#34231E]/10 bg-white/55 p-3 shadow-[0_8px_20px_rgba(43,33,30,0.06)]">
+        <div className="flex items-center gap-2 text-[0.61rem] text-[#7B625C]">
+          <CircleDollarSign className="h-3.5 w-3.5 text-[#FF5848]" />
+          Remaining balance
+        </div>
+        <p className="mt-1.5 text-[0.95rem] font-semibold text-[#17110F]">$879.58</p>
+      </div>
+      <div className="rounded-[14px] border border-[#34231E]/10 bg-white/55 p-3 shadow-[0_8px_20px_rgba(43,33,30,0.06)]">
+        <div className="flex items-center gap-2 text-[0.61rem] text-[#7B625C]">
+          <BadgeCheck className="h-3.5 w-3.5 text-[#FF5848]" />
+          Max calls
+        </div>
+        <p className="mt-1.5 text-[0.95rem] font-semibold text-[#17110F]">250</p>
+      </div>
+    </div>
   );
 }
 
-function MiniSpendCard({ req, idx }: { req: TabRunResult["spendRequests"][0]; idx: number }) {
+function SpendRow({
+  tool,
+  detail,
+  amount,
+  status,
+  Icon,
+  tone,
+  index,
+}: (typeof spendRequests)[number] & { index: number }) {
+  const isPending = tone === "pending";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: idx * 0.07 }}
-      className="rounded-xl border border-slate-700 bg-slate-800 p-4"
+      transition={{ delay: 0.86 + index * 0.08, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className="group flex items-center gap-3 rounded-[13px] border border-[#34231E]/8 bg-white/48 px-3 py-2.5 shadow-[0_8px_18px_rgba(43,33,30,0.045)] transition-transform hover:-translate-y-0.5"
     >
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-0.5">Spend request #{idx + 1}</p>
-          <p className="font-mono text-sm font-bold text-slate-100">{req.tool}</p>
-        </div>
-        <StatusChip status={req.status} />
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-        <div>
-          <p className="text-slate-600">Amount</p>
-          <p className="font-mono font-bold text-amber-400">${req.amountUsd.toFixed(3)}</p>
-        </div>
-        <div>
-          <p className="text-slate-600">Category</p>
-          <p className="text-slate-300">{req.category}</p>
-        </div>
-      </div>
-      <p className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-500 font-mono">
-        {req.policyExplanation ?? req.policyResult ?? "pending"}
-      </p>
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#34231E]/12 bg-white text-[#17110F]">
+        <Icon className="h-4 w-4" strokeWidth={1.8} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[0.72rem] font-semibold text-[#17110F]">{tool}</span>
+        <span className="block truncate text-[0.62rem] text-[#7B625C]">{detail}</span>
+      </span>
+      <span className="text-right">
+        <span className="block text-[0.68rem] font-semibold text-[#17110F]">{amount}</span>
+        <span className={`inline-flex items-center gap-1 text-[0.51rem] ${isPending ? "text-[#D97955]" : "text-[#10A66E]"}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${isPending ? "bg-[#D97955]" : "bg-[#10A66E]"}`} />
+          {status}
+        </span>
+      </span>
+      <ArrowRight className="h-3.5 w-3.5 text-[#D97955]/70" />
     </motion.div>
   );
 }
 
-function ExpenseReport({ result }: { result: TabRunResult }) {
-  const used = result.startingBudgetUsd > 0
-    ? Math.min(100, (result.totalSpentUsd / result.startingBudgetUsd) * 100)
-    : 0;
+function ReceiptRow({ tool, id, date, amount, index }: (typeof receipts)[number] & { index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.06 + index * 0.08, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className="group flex items-center gap-3 rounded-[13px] border border-[#34231E]/8 bg-white/42 px-3 py-2.5 shadow-[0_8px_18px_rgba(43,33,30,0.04)] transition-transform hover:-translate-y-0.5"
+    >
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#34231E]/12 bg-white">
+        <ReceiptText className="h-4 w-4 text-[#17110F]" strokeWidth={1.8} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[0.72rem] font-semibold text-[#17110F]">{tool}</span>
+        <span className="block truncate text-[0.61rem] text-[#7B625C]">
+          {id} · {date}
+        </span>
+      </span>
+      <span className="text-right">
+        <span className="block text-[0.68rem] font-semibold text-[#17110F]">{amount}</span>
+        <span className="inline-flex items-center gap-1 text-[0.51rem] text-[#10A66E]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#10A66E]" />
+          Approved
+        </span>
+      </span>
+      <ArrowRight className="h-3.5 w-3.5 text-[#D97955]/70" />
+    </motion.div>
+  );
+}
+
+function PhoneMockup() {
+  const reduceMotion = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-4"
+      initial={{ opacity: 0, x: 90, rotate: 1.5 }}
+      animate={{ opacity: 1, x: 0, rotate: 0, y: reduceMotion ? 0 : [0, -10, 0] }}
+      transition={{
+        opacity: { delay: 0.28, duration: 0.8 },
+        x: { delay: 0.28, type: "spring", stiffness: 74, damping: 16 },
+        rotate: { delay: 0.28, duration: 0.7 },
+        y: { delay: 1.1, duration: 5.4, repeat: Infinity, ease: "easeInOut" },
+      }}
+      className="relative z-30 mx-auto w-[315px] sm:w-[345px] xl:w-[382px]"
     >
-      {/* Header row */}
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 font-mono text-[11px] text-slate-400">
-          {result.agent}
-        </span>
-        <span className="rounded-full border border-green-500/20 bg-green-500/8 px-3 py-1 text-[11px] font-bold text-green-400">
-          confidence: {result.confidence}
-        </span>
-        <span className="rounded-full border border-slate-700 px-3 py-1 text-[11px] text-slate-400">
-          {result.status.replace("_", " ")}
-        </span>
-      </div>
+      <div className="rounded-[48px] border-[6px] border-[#1A1715] bg-[#1A1715] p-[5px] shadow-[0_34px_76px_rgba(12,22,20,0.46),0_8px_20px_rgba(0,0,0,0.45)]">
+        <div className="relative overflow-hidden rounded-[39px] border border-white/16 bg-[#FFF8F2] text-[#17110F]">
+          <PhoneStatusBar />
+          <div className="px-4 pb-3">
+            <header className="flex items-center justify-between py-3">
+              <span className="text-[1.02rem] font-semibold tracking-[-0.05em] text-[#FF5848]">Tab</span>
+              <button className="inline-flex items-center gap-1 rounded-md text-[0.78rem] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/70">
+                Acme AI Lab <ChevronDown className="h-3 w-3" />
+              </button>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFD8CE] text-[0.6rem] font-semibold text-[#FF5848]">
+                AL
+              </span>
+            </header>
 
-      {/* Bento grid */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* Budget meter */}
-        <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Budget</p>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-700 mb-3">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${used}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full rounded-full bg-amber-500"
-            />
+            <BudgetCard />
+            <MiniCards />
+
+            <section className="mt-4">
+              <div className="mb-2.5 flex items-center justify-between">
+                <h2 className="text-[0.75rem] font-semibold tracking-[-0.02em]">Spend requests</h2>
+                <a href="#" className="text-[0.56rem] font-medium text-[#FF5848]">
+                  View all <ArrowRight className="inline h-2.5 w-2.5" />
+                </a>
+              </div>
+              <div className="space-y-2">
+                {spendRequests.map((request, index) => (
+                  <SpendRow key={request.tool} {...request} index={index} />
+                ))}
+              </div>
+            </section>
+
+            <section className="mt-4">
+              <div className="mb-2.5 flex items-center justify-between">
+                <h2 className="text-[0.75rem] font-semibold tracking-[-0.02em]">Receipts</h2>
+                <a href="#" className="text-[0.56rem] font-medium text-[#FF5848]">
+                  View all <ArrowRight className="inline h-2.5 w-2.5" />
+                </a>
+              </div>
+              <div className="space-y-2">
+                {receipts.map((receipt, index) => (
+                  <ReceiptRow key={receipt.id} {...receipt} index={index} />
+                ))}
+              </div>
+            </section>
+
+            <nav className="mt-4 grid grid-cols-5 border-t border-[#34231E]/10 pt-3">
+              {bottomNav.map(({ label, Icon, active }) => (
+                <a
+                  key={label}
+                  href="#"
+                  className={`flex flex-col items-center gap-1 rounded-lg py-1 text-[0.52rem] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#FF5848]/70 ${
+                    active ? "text-[#FF5848]" : "text-[#5D4D48]"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" strokeWidth={1.8} />
+                  {label}
+                </a>
+              ))}
+            </nav>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-amber-500/10 bg-amber-500/5 p-2.5">
-              <p className="text-[10px] text-amber-600 mb-1">Spent</p>
-              <p className="font-mono text-base font-black text-amber-400">${result.totalSpentUsd.toFixed(3)}</p>
-            </div>
-            <div className="rounded-lg border border-green-500/10 bg-green-500/5 p-2.5">
-              <p className="text-[10px] text-green-700 mb-1">Remaining</p>
-              <p className="font-mono text-base font-black text-green-400">${result.remainingBudgetUsd.toFixed(3)}</p>
-            </div>
-          </div>
-          <p className="mt-3 flex justify-between text-[11px] text-slate-600 font-mono border-t border-slate-700 pt-2">
-            <span>Starting budget</span>
-            <span className="text-slate-400">${result.startingBudgetUsd.toFixed(3)}</span>
-          </p>
+          <div className="mx-auto mb-2 h-1 w-28 rounded-full bg-black" />
         </div>
-
-        {/* Plan */}
-        <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Plan</p>
-          <ol className="space-y-3">
-            {result.plan.map((step, i) => (
-              <motion.li
-                key={i}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="flex items-start gap-2.5"
-              >
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green-500/20 bg-green-500/8 font-mono text-[10px] font-bold text-green-400">{i + 1}</span>
-                <span className="text-xs leading-relaxed text-slate-400">{step}</span>
-              </motion.li>
-            ))}
-          </ol>
-        </div>
-
-        {/* Receipt ledger */}
-        <div className="rounded-2xl border border-slate-700 bg-slate-800 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Receipts</p>
-            <span className="font-mono text-[10px] text-slate-500">{result.receipts.length} paid</span>
-          </div>
-          <div>
-            {result.receipts.map((r, i) => (
-              <motion.div
-                key={r.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.06 }}
-                className="border-b border-slate-700 last:border-0 px-5 py-3"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-mono text-[10px] font-bold text-slate-500">{r.id}</span>
-                  <span className="text-[10px] font-bold text-green-400">✓ {r.status}</span>
-                </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-mono text-slate-400">{r.tool}</span>
-                  <span className="font-mono font-bold text-amber-400">${r.amountUsd.toFixed(3)}</span>
-                </div>
-                <p className="font-mono text-[10px] text-slate-600 mt-0.5">{r.rail} · {r.network}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Spend requests */}
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-3">Spend requests</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {result.spendRequests.map((req, i) => (
-            <MiniSpendCard key={req.id} req={req} idx={i} />
-          ))}
-        </div>
-      </div>
-
-      {/* Final answer */}
-      <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-3">Final answer</p>
-        <p className="text-sm leading-7 text-slate-300">{result.finalAnswer}</p>
       </div>
     </motion.div>
   );
 }
 
-function DemoSection() {
-  const { state, run, reset } = useTabRun();
-  const [goal, setGoal] = useState(DEFAULT_INPUT.goal);
-  const [budget, setBudget] = useState(DEFAULT_INPUT.budget_usd);
-  const [maxCalls, setMaxCalls] = useState(3);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!goal.trim() || state.status === "loading") return;
-    run({ goal: goal.trim(), token: USDC_BASE, chain: "base", budget_usd: budget, max_tool_calls: maxCalls });
-  };
-
-  const result = state.status === "success" ? state.result : null;
-  const isLoading = state.status === "loading";
-
+function WorkflowPill() {
   return (
-    <section id="demo" className="bg-slate-900 py-24 border-y border-slate-700/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <FadeUp>
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">Live demo</p>
-          <h2 className="font-mono text-3xl font-extrabold tracking-tight text-slate-50 sm:text-4xl">
-            Agent expense report.
-          </h2>
-          <p className="mt-3 max-w-2xl text-base text-slate-400 leading-relaxed">
-            Give the agent a goal and a hard budget. Tab runs the full spend-control loop — policy checks, spend requests, receipts — and returns a deterministic trace.
-          </p>
-        </FadeUp>
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-[360px_1fr]">
-          {/* Form */}
-          <FadeUp delay={0.1}>
-            <form onSubmit={handleSubmit} className="sticky top-20 space-y-4 rounded-2xl border border-slate-700 bg-slate-800 p-6">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Open a Tab</p>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-400">Goal</label>
-                <textarea
-                  rows={3}
-                  value={goal}
-                  onChange={e => setGoal(e.target.value)}
-                  className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
-                />
-              </div>
-
-              <div>
-                <div className="mb-1.5 flex justify-between">
-                  <label className="text-xs font-semibold text-slate-400">Budget limit</label>
-                  <span className="font-mono text-sm font-bold text-amber-400">${budget.toFixed(3)}</span>
-                </div>
-                <input
-                  type="range" min={0.005} max={0.1} step={0.001}
-                  value={budget} onChange={e => setBudget(parseFloat(e.target.value))}
-                  className="w-full"
-                />
-                <div className="mt-1 flex justify-between font-mono text-[10px] text-slate-600">
-                  <span>$0.005</span><span>$0.100</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-1.5 flex justify-between">
-                  <label className="text-xs font-semibold text-slate-400">Max tool calls</label>
-                  <span className="font-mono text-sm font-bold text-slate-300">{maxCalls}</span>
-                </div>
-                <input
-                  type="number" min={1} max={5}
-                  value={maxCalls} onChange={e => setMaxCalls(Number(e.target.value))}
-                  className="h-10 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 font-mono text-sm text-slate-100 outline-none transition focus:border-green-500/50 focus:ring-2 focus:ring-green-500/10"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={!goal.trim() || isLoading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-glow transition-all hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
-              >
-                {isLoading ? <><IconLoader />Running...</> : "Open a Tab"}
-              </button>
-
-              {result && (
-                <button type="button" onClick={reset}
-                  className="w-full rounded-xl border border-slate-700 px-5 py-2.5 text-xs font-semibold text-slate-400 transition hover:border-slate-500 hover:text-slate-200 cursor-pointer">
-                  Reset
-                </button>
-              )}
-            </form>
-          </FadeUp>
-
-          {/* Results */}
-          <div>
-            <AnimatePresence mode="wait">
-              {!result && !isLoading && state.status !== "error" && (
-                <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="flex h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 text-center">
-                  <p className="font-mono text-sm text-slate-700">Submit a goal to run the agent.</p>
-                  <p className="mt-1 text-xs text-slate-800">Results appear here as a full expense report.</p>
-                </motion.div>
-              )}
-
-              {isLoading && (
-                <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="flex h-64 flex-col items-center justify-center rounded-2xl border border-green-500/10 bg-green-500/5">
-                  <motion.div className="h-8 w-8 rounded-full border-2 border-slate-700 border-t-green-400 mb-4"
-                    animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
-                  <p className="text-sm font-semibold text-green-400">Tab is running...</p>
-                  <p className="mt-1 text-xs text-slate-600 font-mono">POST /v1/tab/run · waiting for spend trace</p>
-                </motion.div>
-              )}
-
-              {state.status === "error" && (
-                <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="rounded-2xl border border-red-500/20 bg-red-500/5 px-5 py-4 text-sm text-red-400">
-                  <span className="font-bold">Tab run failed: </span>{state.error}
-                </motion.div>
-              )}
-
-              {result && (
-                <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <ExpenseReport result={result} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Section 5: Comparison ────────────────────────────────────────────────────
-function ComparisonSection() {
-  const left = [
-    { label: "Payments", has: true },
-    { label: "Budgets", has: false },
-    { label: "Spend requests", has: false },
-    { label: "Auto-approvals", has: false },
-    { label: "Cryptographic receipts", has: false },
-    { label: "Policy engine", has: false },
-    { label: "Spend trace", has: false },
-  ];
-  const right = [
-    { label: "Payments (via x402)", has: true },
-    { label: "Budgets", has: true },
-    { label: "Spend requests", has: true },
-    { label: "Auto-approvals", has: true },
-    { label: "Cryptographic receipts", has: true },
-    { label: "Policy engine", has: true },
-    { label: "Spend trace", has: true },
-  ];
-
-  return (
-    <section id="compare" className="bg-slate-900 py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <FadeUp>
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">Why Tab</p>
-          <h2 className="font-mono text-3xl font-extrabold tracking-tight text-slate-50 sm:text-4xl">
-            Payment rails vs. Tab.
-          </h2>
-        </FadeUp>
-
-        <div className="mt-12 grid gap-4 md:grid-cols-2 max-w-3xl">
-          {/* Left: payment rails */}
-          <FadeUp delay={0.08}>
-            <div className="h-full rounded-2xl border border-slate-700 bg-slate-800 p-6">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-1">Payment rails</p>
-              <p className="text-lg font-bold text-slate-300 mb-5">Link gives agents a way to pay.</p>
-              <ul className="space-y-2.5">
-                {left.map(item => (
-                  <li key={item.label} className="flex items-center gap-3">
-                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${item.has ? "bg-green-500/10 text-green-400" : "bg-slate-700 text-slate-600"}`}>
-                      {item.has ? <IconCheck /> : <IconX />}
-                    </span>
-                    <span className={`text-sm ${item.has ? "text-slate-200" : "text-slate-600"}`}>{item.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </FadeUp>
-
-          {/* Right: Tab */}
-          <FadeUp delay={0.15}>
-            <div className="h-full rounded-2xl border border-green-500/20 bg-slate-800 p-6 shadow-glow">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-green-600 mb-1">Tab</p>
-              <p className="text-lg font-bold text-slate-50 mb-5">Tab gives agents budgets, spend requests, approvals, and receipts.</p>
-              <ul className="space-y-2.5">
-                {right.map(item => (
-                  <li key={item.label} className="flex items-center gap-3">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-400">
-                      <IconCheck />
-                    </span>
-                    <span className="text-sm text-slate-200">{item.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </FadeUp>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Section 6: Scope ─────────────────────────────────────────────────────────
-function ScopeSection() {
-  return (
-    <section className="border-t border-slate-700/60 bg-slate-800 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid gap-12 lg:grid-cols-2 items-start">
-          <FadeUp>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">Architecture</p>
-            <h2 className="font-mono text-3xl font-extrabold tracking-tight text-slate-50">
-              x402 router is the backbone.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-400">
-              The existing x402 router handles payment execution and the paid-tool catalog.
-              The Tab spend-control layer — budgets, policy engine, spend requests, and receipts — sits on top of that backbone.
-            </p>
-          </FadeUp>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {[
-              {
-                label: "x402 router",
-                tag: "Existing backbone",
-                tagColor: "text-slate-500 border-slate-700",
-                items: ["Payment execution", "Paid-tool catalog", "market-signal endpoint", "model-call endpoint", "x402 protocol"],
-              },
-              {
-                label: "Tab spend layer",
-                tag: "Tab spend layer",
-                tagColor: "text-green-500 border-green-500/30",
-                items: ["Budget enforcement", "Policy engine", "Spend requests", "Auto-approvals", "Cryptographic receipts", "Spend trace"],
-              },
-            ].map((col, i) => (
-              <FadeUp key={col.label} delay={i * 0.1}>
-                <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5 h-full">
-                  <div className="flex items-start justify-between gap-2 mb-4">
-                    <p className="font-mono text-sm font-bold text-slate-200">{col.label}</p>
-                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest shrink-0 ${col.tagColor}`}>
-                      {col.tag}
-                    </span>
-                  </div>
-                  <ul className="space-y-2">
-                    {col.items.map(item => (
-                      <li key={item} className="flex items-center gap-2 text-xs text-slate-500">
-                        <span className="h-1 w-1 rounded-full bg-slate-700 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── CTA ─────────────────────────────────────────────────────────────────────
-function CTASection() {
-  return (
-    <section className="border-t border-slate-700/60 bg-slate-900 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 text-center">
-        <FadeUp>
-          <h2 className="font-mono text-4xl font-extrabold tracking-tight text-slate-50 sm:text-5xl">
-            Give your agents a Tab.
-          </h2>
-          <p className="mt-4 text-lg text-slate-400">
-            Budget enforcement, spend requests, approvals, and receipts — in one API call.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl bg-green-500 px-7 py-3.5 text-base font-bold text-slate-950 shadow-glow transition-all hover:bg-green-400"
+    <motion.div
+      id="workflow"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.72, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+      className="relative z-40 mt-12 w-full overflow-x-auto pb-2 lg:fixed lg:bottom-[3.8vh] lg:left-[4.2vw] lg:mt-0 lg:w-auto lg:origin-left lg:scale-[0.86] lg:overflow-visible lg:pb-0 xl:bottom-[8.5vh] xl:scale-100"
+    >
+      <div className="flex w-max items-center gap-3 rounded-full bg-[#F8F2EA] px-5 py-3.5 text-[#17110F] shadow-[0_22px_54px_rgba(28,18,15,0.22)] sm:gap-5 sm:px-8 sm:py-4">
+        {workflowSteps.map(({ label, Icon }, index) => (
+          <div key={label} className="group flex items-center gap-4">
+            <a
+              href={index === 0 ? "#top" : "#workflow"}
+              className="inline-flex items-center gap-3 rounded-full outline-none transition-opacity hover:opacity-70 focus-visible:ring-2 focus-visible:ring-[#FF5848]/70"
             >
-              Open a Tab <IconArrow />
-            </Link>
+              <Icon className="h-[18px] w-[18px] transition-colors group-hover:text-[#FF5848] sm:h-5 sm:w-5" strokeWidth={1.8} />
+              <span className="whitespace-nowrap text-[0.78rem] font-semibold sm:text-[0.84rem]">{label}</span>
+            </a>
+            {index < workflowSteps.length - 1 && <ArrowRight className="h-4 w-4 text-[#17110F]/55" strokeWidth={1.8} />}
           </div>
-        </FadeUp>
+        ))}
       </div>
-    </section>
+    </motion.div>
   );
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
-function Footer() {
-  return (
-    <footer className="border-t border-slate-700/60 bg-slate-900 py-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-green-500 font-mono text-sm font-black text-slate-950">
-              T
-            </span>
-            <span className="text-sm font-bold text-slate-50">Tab</span>
-            <span className="text-slate-700 text-xs font-mono ml-2">— The spend layer for AI agents.</span>
-          </div>
-          <p className="text-xs text-slate-700 font-mono">Built on x402 · Base · 2026</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-900">
-      <Nav />
-      <HeroSection />
-      <WorkflowSection />
-      <DemoSection />
-      <ComparisonSection />
-      <ScopeSection />
-      <CTASection />
-      <Footer />
+    <div
+      id="top"
+      className="relative min-h-screen overflow-hidden bg-[#2B211E] font-sans text-[#FFF8F2] lg:h-screen"
+      style={{
+        fontFamily:
+          'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+      }}
+    >
+      <BackgroundSculpture />
+      <LandingNav />
+
+      <main className="relative z-10 min-h-screen px-5 sm:px-8 lg:h-screen lg:min-h-0 lg:px-[4.3vw]">
+        <div className="grid min-h-screen items-center gap-10 pt-20 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,0.95fr)_minmax(390px,0.72fr)] lg:gap-2 lg:pt-0">
+          <HeroCopy />
+          <div className="relative flex min-h-[600px] items-center justify-center pb-32 pt-6 lg:min-h-0 lg:translate-x-4 lg:self-start lg:items-start lg:justify-end lg:pb-0 lg:pt-[4.6rem] xl:translate-x-0">
+            <PhoneMockup />
+          </div>
+        </div>
+        <WorkflowPill />
+      </main>
     </div>
   );
 }
