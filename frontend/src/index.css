@@ -143,6 +143,24 @@ input[type="range"]::-moz-range-thumb {
   background-size: 28px 28px;
 }
 
+/* ─── Dashboard workspace ───────────────────────────────────────────────────── */
+.dashboard-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(310px, 0.88fr) minmax(430px, 1.15fr) minmax(320px, 0.82fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.dashboard-command-log,
+.dashboard-context-body {
+  max-height: calc(100vh - 18rem);
+  overflow: auto;
+}
+
+.dashboard-approval-body {
+  max-height: none;
+}
+
 /* ─── Shimmer for loading states ────────────────────────────────────────────── */
 @keyframes tab-shimmer {
   0%   { background-position: -400px center; }
@@ -242,6 +260,19 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 1280px) {
+  .dashboard-workspace-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.45fr);
+  }
+
+  .dashboard-approval-column {
+    grid-column: 1;
+  }
+
+  .dashboard-context-column {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
   .landing-ring {
     right: -4%;
     min-width: 540px;
@@ -260,6 +291,20 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-height: 760px) and (min-width: 1024px) {
+  .dashboard-command-log {
+    min-height: 190px;
+    max-height: 260px;
+  }
+
+  .dashboard-context-body {
+    max-height: calc(100vh - 13.5rem);
+  }
+
+  .dashboard-command-body,
+  .dashboard-approval-body {
+    padding: 0.75rem;
+  }
+
   .landing-hero-grid {
     align-items: center;
   }
@@ -298,6 +343,22 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 1024px) {
+  .dashboard-workspace-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-command-column,
+  .dashboard-approval-column,
+  .dashboard-context-column {
+    width: 100%;
+  }
+
+  .dashboard-command-log,
+  .dashboard-context-body {
+    max-height: none;
+  }
+
   .landing-phone-stage {
     min-height: 520px;
   }
@@ -310,6 +371,16 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 768px) {
+  .dashboard-command-body,
+  .dashboard-approval-body,
+  .dashboard-context-body {
+    padding: 0.75rem;
+  }
+
+  .dashboard-command-log {
+    min-height: 220px;
+  }
+
   .landing-phone-stage {
     min-height: 500px;
     padding-bottom: 5rem;

@@ -5,14 +5,12 @@ import { BudgetMeter } from "../components/BudgetMeter";
 import { FinalAnswer } from "../components/FinalAnswer";
 import { GoalForm } from "../components/GoalForm";
 import { PlanReveal } from "../components/PlanReveal";
-import { ReceiptLedger } from "../components/ReceiptLedger";
 import { RunSummary } from "../components/RunSummary";
 import { SpendRequestCard } from "../components/SpendRequestCard";
 import { TopNav } from "../components/TopNav";
 import { useTabRun } from "../hooks/useTabRun";
-import type { TabRunRequest } from "../lib/types";
+import type { RunState, TabRunRequest, TabRunResult } from "../lib/types";
 
-// ─── Staged loading steps (visual-only) ──────────────────────────────────────
 const LOADING_STAGES = [
   { step: 1, label: "Reading budget policy", detail: "Fetching enforcement rules for this session" },
   { step: 2, label: "Creating spend requests", detail: "Agent queuing paid-tool calls" },
@@ -21,252 +19,76 @@ const LOADING_STAGES = [
   { step: 5, label: "Closing Tab", detail: "Compiling spend trace and final answer" },
 ];
 
+function formatPayloadUsd(value: number) {
+  return `$${value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")}`;
+}
+
 function StagedLoader() {
   const [activeStage, setActiveStage] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveStage((s) => (s < LOADING_STAGES.length - 1 ? s + 1 : s));
-    }, 1400);
+    }, 1200);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <motion.div
+    <motion.section
       key="staged-loading"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      className="tab-card overflow-hidden rounded-2xl"
+      className="overflow-hidden rounded-[1.5rem] border border-[#FFF8F2]/12 bg-[#100C0B]/45"
     >
-      {/* Header */}
-      <div className="flex items-center gap-3 border-b border-[#FFF8F2]/10 px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-[#FFF8F2]/10 px-4 py-3">
         <motion.span
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           className="h-4 w-4 rounded-full border-2 border-[#FFF8F2]/18 border-t-[#FF5848]"
         />
         <div>
-          <p className="text-sm font-bold text-[#FF5848]">Tab open — agent running</p>
-          <p className="font-mono text-xs text-[#FFF8F2]/42">
-            POST /v1/tab/run · waiting for spend trace
-          </p>
+          <p className="text-sm font-bold text-[#FF5848]">Tab open - agent running</p>
+          <p className="font-mono text-[10px] text-[#FFF8F2]/42">POST /v1/tab/run</p>
         </div>
       </div>
 
-      {/* Steps */}
       <div className="divide-y divide-[#FFF8F2]/10">
-        {LOADING_STAGES.map((stage, i) => {
-          const done = i < activeStage;
-          const active = i === activeStage;
-          const pending = i > activeStage;
+        {LOADING_STAGES.map((stage, index) => {
+          const done = index < activeStage;
+          const active = index === activeStage;
 
           return (
             <motion.div
               key={stage.step}
               initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: pending ? 0.35 : 1, x: 0 }}
-              transition={{ delay: i * 0.06, duration: 0.3 }}
-              className="flex items-center gap-4 px-5 py-3"
+              animate={{ opacity: index > activeStage ? 0.38 : 1, x: 0 }}
+              transition={{ delay: index * 0.04, duration: 0.25 }}
+              className="flex items-center gap-3 px-4 py-3"
             >
-              {/* Step indicator */}
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center">
-                {done ? (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="flex h-5 w-5 items-center justify-center rounded-full text-[#FF5848]" style={{ background: "rgba(255,88,72,0.15)" }}
-                  >
-                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
-                      <path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
-                    </svg>
-                  </motion.span>
-                ) : active ? (
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                    className="h-4 w-4 rounded-full border-2 border-[#FFF8F2]/18 border-t-[#FF5848]"
-                  />
-                ) : (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#FFF8F2]/12 font-mono text-[9px] text-[#FFF8F2]/34">
-                    {stage.step}
-                  </span>
-                )}
-              </div>
-
-              {/* Label */}
+              <span
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border font-mono text-[10px] font-bold ${
+                  done
+                    ? "border-[#FF5848]/35 bg-[#FF5848]/14 text-[#FFB39E]"
+                    : active
+                    ? "border-[#FF5848]/45 text-[#FF5848]"
+                    : "border-[#FFF8F2]/12 text-[#FFF8F2]/34"
+                }`}
+              >
+                {done ? "✓" : stage.step}
+              </span>
               <div className="min-w-0 flex-1">
-                <p className={`text-xs font-semibold ${done ? "text-[#FFF8F2]/58" : active ? "text-[#FFF8F2]" : "text-[#FFF8F2]/34"}`}>
+                <p className={`text-xs font-semibold ${active ? "text-[#FFF8F2]" : "text-[#FFF8F2]/56"}`}>
                   {stage.label}
                 </p>
-                {active && (
-                  <motion.p
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-0.5 font-mono text-[10px] text-[#FFF8F2]/42"
-                  >
-                    {stage.detail}
-                  </motion.p>
-                )}
+                {active && <p className="mt-0.5 font-mono text-[10px] text-[#FFF8F2]/42">{stage.detail}</p>}
               </div>
-
-              {/* Timing */}
-              {done && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="shrink-0 font-mono text-[9px] text-[#FF5848]/50"
-                >
-                  done
-                </motion.span>
-              )}
             </motion.div>
           );
         })}
       </div>
-    </motion.div>
+    </motion.section>
   );
-}
-
-// ─── Static tool catalog ──────────────────────────────────────────────────────
-const TOOL_CATALOG = [
-  {
-    id: "market-signal",
-    provider: "DexScreener",
-    price: "$0.020",
-    category: "market-data",
-    status: "available" as const,
-    decision: "Selected — within budget & policy",
-    desc: "Real-time DEX liquidity data for token pairs on Base.",
-  },
-  {
-    id: "model-call",
-    provider: "Anthropic",
-    price: "$0.001",
-    category: "inference",
-    status: "conditional" as const,
-    decision: "Selected if remaining budget allows",
-    desc: "Claude Haiku — fast synthesis and reasoning at minimal cost.",
-  },
-  {
-    id: "trading-execution",
-    provider: "External",
-    price: "variable",
-    category: "trading-execution",
-    status: "blocked" as const,
-    decision: "Blocked — category denied by policy",
-    desc: "On-chain trade execution. Prevented by Tab policy for this run.",
-  },
-];
-
-// ─── Static policy rules ──────────────────────────────────────────────────────
-const POLICY_RULES = [
-  { label: "Approval mode", value: "Auto (within budget)", type: "neutral" },
-  { label: "Allowed categories", value: "market-data · inference", type: "allowed" },
-  { label: "Blocked categories", value: "trading-execution", type: "blocked" },
-  { label: "Budget check", value: "Before every spend request", type: "neutral" },
-  { label: "Overspend protection", value: "Hard cap — no overruns", type: "allowed" },
-  { label: "Payment rail", value: "x402 · base-sepolia", type: "neutral" },
-];
-
-// ─── Tool Catalog panel ───────────────────────────────────────────────────────
-function ToolCatalogPanel() {
-  const statusMeta = {
-    available: {
-      badge: "border-green-500/20 bg-green-500/8 text-green-400",
-      label: "Available",
-    },
-    conditional: {
-      badge: "border-amber-500/20 bg-amber-500/8 text-amber-400",
-      label: "Conditional",
-    },
-    blocked: {
-      badge: "border-red-500/20 bg-red-500/8 text-red-400",
-      label: "Blocked",
-    },
-  };
-
-  return (
-      <section id="policy" className="tab-card overflow-hidden rounded-2xl">
-      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/42">
-          Paid Tool Catalog
-        </p>
-        <p className="mt-0.5 text-sm font-bold text-[#FFF8F2]">
-          Tools available to this agent
-        </p>
-      </div>
-
-      <div className="divide-y divide-[#FFF8F2]/10">
-        {TOOL_CATALOG.map((tool) => {
-          const meta = statusMeta[tool.status];
-          return (
-            <div key={tool.id} className="px-5 py-4">
-              <div className="mb-2 flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-mono text-sm font-bold text-[#FFF8F2]">{tool.id}</p>
-                  <p className="mt-0.5 text-[11px] text-[#FFF8F2]/44">
-                    {tool.provider} · {tool.category}
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="font-mono text-sm font-bold text-amber-400">{tool.price}</p>
-                  <span className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest ${meta.badge}`}>
-                    {meta.label}
-                  </span>
-                </div>
-              </div>
-              <p className="text-[11px] leading-relaxed text-[#FFF8F2]/42">{tool.desc}</p>
-              <p className="mt-1.5 font-mono text-[10px] text-[#FFF8F2]/30">→ {tool.decision}</p>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-// ─── Policy Engine panel ──────────────────────────────────────────────────────
-function PolicyEnginePanel() {
-  return (
-    <section className="tab-card overflow-hidden rounded-2xl">
-      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/42">
-          Policy Engine
-        </p>
-        <p className="mt-0.5 text-sm font-bold text-[#FFF8F2]">
-          Rules applied per spend request
-        </p>
-      </div>
-
-      <div className="divide-y divide-[#FFF8F2]/10 px-5">
-        {POLICY_RULES.map((rule) => (
-          <div key={rule.label} className="flex items-center justify-between gap-4 py-2.5">
-            <span className="text-xs text-[#FFF8F2]/45">{rule.label}</span>
-            <span className={`font-mono text-[11px] font-semibold ${
-              rule.type === "allowed"
-                ? "text-green-400"
-                : rule.type === "blocked"
-                ? "text-red-400"
-                : "text-[#FFF8F2]/62"
-            }`}>
-              {rule.value}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className="border-t border-[#FFF8F2]/10 px-5 py-3">
-        <p className="font-mono text-[10px] text-[#FFF8F2]/30">
-          Policy-controlled paid tool access for agents
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function formatPayloadUsd(value: number) {
-  return `$${value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "")}`;
 }
 
 function RequestPayloadCard({
@@ -284,12 +106,10 @@ function RequestPayloadCard({
   }[status];
 
   return (
-    <section className="tab-card rounded-2xl p-5">
+    <section className="rounded-[1.25rem] border border-[#FFF8F2]/10 bg-[#1E1917]/36 p-4">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
-            Request payload
-          </p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5848]">Request payload</p>
           <p className="mt-0.5 font-mono text-[10px] text-[#FFF8F2]/38">POST /v1/tab/run</p>
         </div>
         <span className="rounded-full border border-[#FFF8F2]/14 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#FFF8F2]/48">
@@ -297,7 +117,7 @@ function RequestPayloadCard({
         </span>
       </div>
 
-      <dl className="space-y-3 text-xs">
+      <dl className="grid gap-2 text-xs">
         <div className="flex items-center justify-between gap-4">
           <dt className="text-[#FFF8F2]/44">budget_usd</dt>
           <dd className="font-mono font-bold text-amber-400">{input.budget_usd}</dd>
@@ -327,110 +147,81 @@ function RequestPayloadCard({
   );
 }
 
-// ─── Hero section ─────────────────────────────────────────────────────────────
-function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
+function RunWorkspacePanel({
+  state,
+  result,
+  lastInput,
+}: {
+  state: RunState;
+  result: TabRunResult | null;
+  lastInput: TabRunRequest | null;
+}) {
   return (
-    <section className="relative overflow-hidden border-b border-[#FFF8F2]/10 pb-14 pt-10">
-      <div className="tab-grid absolute inset-0 opacity-25" />
-      <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.05)" }} />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.04)" }} />
+    <AnimatePresence mode="wait">
+      {state.status === "loading" && <StagedLoader />}
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
-        {/* Badges */}
+      {state.status === "error" && (
         <motion.div
+          key="error"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 flex flex-wrap gap-2"
+          exit={{ opacity: 0, y: -6 }}
+          className="rounded-[1.25rem] border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FFF8F2]/14 bg-[#FFF8F2]/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFF8F2]/52">
-            Powered by x402 paid-tool backbone
-          </span>
+          <span className="font-bold">Tab run failed: </span>
+          {state.error}
         </motion.div>
+      )}
 
-        <div className="grid items-end gap-10 lg:grid-cols-[1fr_auto]">
-          <div>
-            <motion.h1
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.06 }}
-              className="text-5xl font-semibold leading-[1.06] tracking-tight text-[#FFF8F2] sm:text-6xl lg:text-[4.5rem]" style={{ letterSpacing: "-0.065em" }}
-            >
-              The spend layer<br />
-              for <span style={{ color: "#FF5848" }}>AI agents.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.13 }}
-              className="mt-5 max-w-xl text-lg leading-relaxed text-[#FFF8F2]/66"
-            >
-              Give agents controlled access to paid tools — with budgets,
-              policy-based spend approval, and an auditable receipt trace
-              for every call.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8 flex flex-wrap gap-3"
-            >
-              <button
-                onClick={onRunDemo}
-                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white shadow-glow transition-all hover:opacity-90 cursor-pointer" style={{ background: "#FF5848" }}
-              >
-                Run Agent
-                <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
-                  <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.268V3.732Z" />
-                </svg>
-              </button>
-              <a
-                href="#answer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#FFF8F2]/14 bg-[#FFF8F2]/5 px-6 py-3 text-sm font-bold text-[#FFF8F2]/64 transition-all hover:border-[#FFF8F2]/28 hover:text-[#FFF8F2]"
-              >
-                View Spend Trace
-              </a>
-            </motion.div>
+      {result && (
+        <motion.div
+          key="result"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          className="space-y-4"
+        >
+          <div className="grid gap-3 md:grid-cols-2">
+            <BudgetMeter
+              startingBudgetUsd={result.startingBudgetUsd}
+              totalSpentUsd={result.totalSpentUsd}
+              remainingBudgetUsd={result.remainingBudgetUsd}
+            />
+            <RunSummary result={result} request={lastInput} />
           </div>
 
-          {/* Right: quick-scan fact cards */}
-          <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.28 }}
-            className="hidden shrink-0 flex-col gap-2 lg:flex"
-          >
-            {[
-              { step: "1", label: "Agent receives goal + budget" },
-              { step: "2", label: "Tab inspects available paid tools" },
-              { step: "3", label: "Spend requests evaluated by policy" },
-              { step: "4", label: "Approved calls execute via x402" },
-              { step: "5", label: "Receipts and trace returned" },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="tab-card flex items-center gap-3 rounded-xl px-4 py-2.5"
-              >
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold"
-                  style={{ border: "1px solid rgba(255,88,72,0.25)", background: "rgba(255,88,72,0.08)", color: "#FF5848" }}>
-                  {item.step}
-                </span>
-                <p className="text-xs text-[#FFF8F2]/62">{item.label}</p>
+          {lastInput && <RequestPayloadCard input={lastInput} status="success" />}
+
+          <PlanReveal plan={result.plan} />
+
+          <section id="requests" className="space-y-3">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5848]">Spend requests</p>
+                <h2 className="mt-0.5 text-sm font-bold text-[#FFF8F2]">Policy check before every paid call</h2>
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
+              <span className="rounded-full border border-[#FFF8F2]/14 px-3 py-0.5 font-mono text-[10px] text-[#FFF8F2]/48">
+                {result.spendRequests.length} evaluated
+              </span>
+            </div>
+            <div className="grid gap-3">
+              {result.spendRequests.map((request, index) => (
+                <SpendRequestCard key={request.id} request={request} index={index} />
+              ))}
+            </div>
+          </section>
+
+          <FinalAnswer result={result} />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { state, run, reset } = useTabRun();
   const [lastInput, setLastInput] = useState<TabRunRequest | null>(null);
-  const formRef = useRef<HTMLDivElement>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   const handleRun = (input: TabRunRequest) => {
     setLastInput(input);
@@ -440,10 +231,7 @@ export default function DashboardPage() {
   const handleReset = () => {
     reset();
     setLastInput(null);
-  };
-
-  const scrollToForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const result = state.status === "success" ? state.result : null;
@@ -453,94 +241,15 @@ export default function DashboardPage() {
     <div className="min-h-screen tab-premium-shell">
       <TopNav onNewRun={handleReset} />
 
-      <HeroSection onRunDemo={scrollToForm} />
-
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6">
-        {/* ── Left column ── */}
-        <div className="space-y-5" ref={formRef} id="goal">
-          <AgentChat runState={state} onApproveRun={handleRun} />
-
-          <GoalForm isLoading={isLoading} onSubmit={handleRun} />
-
-          <AnimatePresence mode="wait">
-            {isLoading && <StagedLoader />}
-
-            {state.status === "error" && (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="rounded-2xl border border-red-500/20 bg-red-500/5 px-5 py-4 text-sm text-red-400"
-              >
-                <span className="font-bold">Tab run failed: </span>
-                {state.error}
-              </motion.div>
-            )}
-
-            {result && (
-              <motion.div
-                key="result"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-5"
-              >
-                <PlanReveal plan={result.plan} />
-
-                <section id="requests" className="space-y-3">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
-                        Spend Requests
-                      </p>
-                      <h2 className="mt-0.5 text-base font-bold text-[#FFF8F2]">
-                        Policy check before every paid call
-                      </h2>
-                    </div>
-                    <span className="rounded-full border border-[#FFF8F2]/14 px-3 py-0.5 font-mono text-[10px] text-[#FFF8F2]/48">
-                      {result.spendRequests.length} evaluated
-                    </span>
-                  </div>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {result.spendRequests.map((request, index) => (
-                      <SpendRequestCard key={request.id} request={request} index={index} />
-                    ))}
-                  </div>
-                </section>
-
-                <FinalAnswer result={result} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* ── Right sidebar ── */}
-        <aside className="mt-6 space-y-5 lg:mt-0 lg:sticky lg:top-20 lg:self-start">
-          {result ? (
-            <>
-              {lastInput && <RequestPayloadCard input={lastInput} status="success" />}
-              <BudgetMeter
-                startingBudgetUsd={result.startingBudgetUsd}
-                totalSpentUsd={result.totalSpentUsd}
-                remainingBudgetUsd={result.remainingBudgetUsd}
-              />
-              <RunSummary result={result} request={lastInput} />
-              <ReceiptLedger receipts={result.receipts} />
-            </>
-          ) : (
-            <>
-              {lastInput && (
-                <RequestPayloadCard
-                  input={lastInput}
-                  status={state.status === "loading" ? "loading" : state.status === "error" ? "error" : "submitted"}
-                />
-              )}
-              <ToolCatalogPanel />
-              <PolicyEnginePanel />
-            </>
-          )}
-        </aside>
+      <main ref={workspaceRef} className="mx-auto max-w-[1680px] px-3 py-4 sm:px-5 lg:px-6 lg:py-5">
+        <AgentChat
+          runState={state}
+          result={result}
+          lastInput={lastInput}
+          onApproveRun={handleRun}
+          manualControls={<GoalForm isLoading={isLoading} onSubmit={handleRun} />}
+          runPanel={<RunWorkspacePanel state={state} result={result} lastInput={lastInput} />}
+        />
       </main>
     </div>
   );

@@ -21,6 +21,7 @@ secrets.*
 node_modules
 dist
 frontend/dist
+frontend/reference/
 .DS_Store
 _incoming/
 *.zip

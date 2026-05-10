@@ -35,89 +35,124 @@ export function ApprovalCard({
 }: ApprovalCardProps) {
   const disabled = isRunning || status === "declined" || status === "running" || status === "completed";
   const payloadJson = JSON.stringify(proposedRun.payload, null, 2);
+  const budgetMath = [
+    { label: "Budget", value: formatPlannerUsd(proposedRun.payload.budget_usd) },
+    { label: "Estimated spend", value: formatPlannerUsd(proposedRun.estimatedSpendUsd, 3) },
+    { label: "Remaining if approved", value: formatPlannerUsd(proposedRun.estimatedRemainingUsd) },
+  ];
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-      className="overflow-hidden rounded-[1.75rem] border border-[#FF5848]/24 bg-[linear-gradient(145deg,rgba(255,88,72,0.16),rgba(255,248,242,0.075))] shadow-[0_28px_80px_rgba(20,12,10,0.28)]"
+      initial={{ opacity: 0, y: 14, scale: 0.99 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.99 }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      className="overflow-hidden rounded-[2rem] border border-[#F0B28C]/28 bg-[#FFF8F2] text-[#241C19] shadow-[0_30px_90px_rgba(20,12,10,0.36)]"
     >
-      <div className="relative overflow-hidden border-b border-[#FFF8F2]/10 p-5 sm:p-6">
-        <div className="pointer-events-none absolute right-[-90px] top-[-120px] h-64 w-64 rounded-full bg-[#FF5848]/18 blur-3xl" />
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+      <div className="relative overflow-hidden border-b border-[#241C19]/10 bg-[linear-gradient(145deg,#FFF8F2,#F3DDCF)] p-5">
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#FFF8F2]/16 bg-[#FFF8F2]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#FFF8F2]/66">
-              <LockKeyhole className="h-3.5 w-3.5 text-[#FF6A5D]" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#241C19]/12 bg-white/45 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]">
+              <LockKeyhole className="h-3.5 w-3.5 text-[#FF5848]" />
               Human approval required
             </div>
-            <h3 className="text-2xl font-semibold tracking-[-0.05em] text-[#FFF8F2]">
-              Tab agent wants approval to spend
+            <h3 className="text-[clamp(1.75rem,3vw,2.75rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-[#241C19]">
+              Tab agent wants approval
             </h3>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#FFF8F2]/62">
+            <p className="mt-3 max-w-md text-sm leading-6 text-[#4B332D]/72">
               Approve this paid tool plan before the agent runs.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#FFF8F2]/12 bg-[#1E1917]/42 p-4 text-right">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/42">Amount</p>
-            <p className="mt-1 font-mono text-3xl font-black tracking-[-0.04em] text-[#FFF8F2]">
+          <div className="rounded-[1.5rem] border border-[#241C19]/10 bg-[#241C19] p-4 text-right text-[#FFF8F2] shadow-[0_18px_48px_rgba(36,28,25,0.22)] sm:min-w-[176px]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/48">Amount</p>
+            <p className="mt-1 font-mono text-4xl font-black tracking-[-0.05em]">
               Up to {formatPlannerUsd(proposedRun.estimatedSpendUsd, 3)}
             </p>
-            <p className="mt-1 text-[11px] font-semibold text-[#FFB39E]">{statusCopy(status)}</p>
+            <p className="mt-1 text-[11px] font-bold text-[#FFB39E]">{statusCopy(status)}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[1fr_0.8fr]">
-        <dl className="grid gap-3 text-xs sm:grid-cols-2">
-          {[
-            ["Requested by", "Tab agent"],
-            ["Purpose", proposedRun.payload.goal],
-            ["Tool", "market-signal + model-call"],
-            ["Provider", "DexScreener + Anthropic via Tab router"],
-            ["Budget", formatPlannerUsd(proposedRun.payload.budget_usd)],
-            ["Max calls", String(proposedRun.payload.max_tool_calls)],
-            ["Remaining if approved", formatPlannerUsd(proposedRun.estimatedRemainingUsd)],
-            ["Token / asset", proposedRun.payload.token],
-            ["Chain", "Base"],
-            ["Policy", "Human approval required"],
-            ["Request ID", proposedRun.id],
-          ].map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-[#FFF8F2]/10 bg-[#1E1917]/32 p-3">
-              <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#FFF8F2]/36">{label}</dt>
-              <dd className="mt-1 break-words text-[#FFF8F2]/76">{value}</dd>
-            </div>
-          ))}
-        </dl>
+      <div className="grid gap-4 p-5 xl:grid-cols-[1fr_0.78fr]">
+        <div className="space-y-3">
+          <div className="rounded-[1.25rem] border border-[#241C19]/10 bg-white/48 p-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]/62">Purpose</p>
+            <p className="mt-2 text-sm leading-6 text-[#241C19]/78">{proposedRun.payload.goal}</p>
+          </div>
 
-        <div className="flex flex-col justify-between gap-4 rounded-2xl border border-[#FFF8F2]/10 bg-[#FFF8F2]/7 p-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[1.25rem] border border-[#241C19]/10 bg-white/48 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]/62">Tool plan</p>
+              <div className="mt-3 space-y-2">
+                {proposedRun.tools.map((tool) => (
+                  <div key={tool.id} className="flex items-center justify-between gap-3 rounded-xl bg-[#241C19]/6 px-3 py-2 text-xs">
+                    <span className="font-mono font-bold text-[#241C19]/76">{tool.label}</span>
+                    <span className="font-mono font-black text-[#A46A00]">{formatPlannerUsd(tool.priceUsd, 3)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[1.25rem] border border-[#241C19]/10 bg-white/48 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]/62">Budget impact</p>
+              <dl className="mt-3 space-y-2 text-xs">
+                {budgetMath.map((item) => (
+                  <div key={item.label} className="flex justify-between gap-3">
+                    <dt className="text-[#241C19]/52">{item.label}</dt>
+                    <dd className="font-mono font-black text-[#241C19]">{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[1.25rem] border border-[#0E4A43]/14 bg-[#0E4A43]/8 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#0E4A43]">Policy</p>
+              <p className="mt-2 text-sm font-bold text-[#241C19]">Human approval required</p>
+              {proposedRun.warnings.map((warning) => (
+                <p key={warning} className="mt-2 text-xs leading-5 text-[#8A5B00]">{warning}</p>
+              ))}
+            </div>
+            <div className="rounded-[1.25rem] border border-[#241C19]/10 bg-white/48 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]/62">Token / asset</p>
+              <p className="mt-2 break-all font-mono text-[11px] leading-5 text-[#241C19]/70">{proposedRun.payload.token}</p>
+              <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#7D4035]/62">Request ID</p>
+              <p className="mt-1 font-mono text-xs font-bold text-[#241C19]">{proposedRun.id}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-between gap-4 rounded-[1.5rem] border border-[#241C19]/10 bg-[#241C19] p-4 text-[#FFF8F2]">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5848]">Spend control</p>
-            <p className="mt-3 text-sm leading-6 text-[#FFF8F2]/68">
-              Tab does not just let agents pay. It lets humans control what agents are allowed to buy.
-            </p>
-            <p className="mt-3 text-xs leading-5 text-[#FFF8F2]/46">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#FFB39E]">Spend control</p>
+            <p className="mt-3 text-sm leading-6 text-[#FFF8F2]/76">
               Declining stops the run before any paid call executes. Receipts are only written for approved calls.
             </p>
+            {status === "declined" && (
+              <p className="mt-3 rounded-2xl border border-red-400/24 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-100">
+                No paid call executed. No receipt created.
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <button
               type="button"
               onClick={onInspect}
-              className="group inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#FFF8F2]/16 bg-[#FFF8F2]/8 px-4 text-sm font-semibold text-[#FFF8F2] transition hover:border-[#FF5848]/48 hover:bg-[#FFF8F2]/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/60"
+              className="group inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#FFF8F2]/18 bg-[#FFF8F2]/8 px-4 text-sm font-semibold text-[#FFF8F2] transition hover:border-[#FF5848]/48 hover:bg-[#FFF8F2]/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/60"
             >
               <FileJson className="h-4 w-4 text-[#FFB39E]" />
               Inspect
               <ChevronDown className={`h-4 w-4 transition-transform ${inspectOpen ? "rotate-180" : ""}`} />
             </button>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
               <button
                 type="button"
                 onClick={onDecline}
                 disabled={disabled}
-                className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-500/8 px-4 text-sm font-semibold text-red-200 transition hover:border-red-400/35 hover:bg-red-500/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-400/22 bg-red-500/10 px-4 text-sm font-semibold text-red-100 transition hover:border-red-400/40 hover:bg-red-500/14 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <XCircle className="h-4 w-4" />
                 Decline
@@ -142,14 +177,14 @@ export function ApprovalCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.26, ease: "easeOut" }}
-            className="overflow-hidden border-t border-[#FFF8F2]/10"
+            transition={{ duration: 0.24, ease: "easeOut" }}
+            className="overflow-hidden border-t border-[#241C19]/10 bg-[#241C19]"
           >
-            <div className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[1fr_0.82fr]">
-              <div className="rounded-2xl border border-[#FFF8F2]/10 bg-[#100C0B]/58 p-4">
-                <p className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#FF5848]">
+            <div className="grid gap-4 p-5 text-[#FFF8F2] lg:grid-cols-[1fr_0.82fr]">
+              <div className="rounded-[1.25rem] border border-[#FFF8F2]/10 bg-[#100C0B]/60 p-4">
+                <p className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFB39E]">
                   <FileJson className="h-3.5 w-3.5" />
-                  Exact request payload
+                  Request payload JSON
                 </p>
                 <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-[#FFF8F2]/70">
                   {payloadJson}
@@ -157,19 +192,30 @@ export function ApprovalCard({
               </div>
 
               <div className="space-y-3">
-                <div className="rounded-2xl border border-[#FFF8F2]/10 bg-[#1E1917]/42 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/40">Tool prices</p>
+                <div className="rounded-[1.25rem] border border-[#FFF8F2]/10 bg-[#FFF8F2]/7 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/46">Tool prices</p>
                   <div className="mt-3 space-y-2">
                     {proposedRun.tools.map((tool) => (
                       <div key={tool.id} className="flex items-center justify-between gap-3 text-xs">
-                        <span className="text-[#FFF8F2]/62">{tool.label}</span>
+                        <span className="text-[#FFF8F2]/64">{tool.label}</span>
                         <span className="font-mono font-bold text-amber-300">{formatPlannerUsd(tool.priceUsd, 3)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="rounded-2xl border border-[#FFF8F2]/10 bg-[#1E1917]/42 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/40">Policy explanation</p>
+                <div className="rounded-[1.25rem] border border-[#FFF8F2]/10 bg-[#FFF8F2]/7 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/46">Budget math</p>
+                  <div className="mt-3 space-y-2">
+                    {budgetMath.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3 text-xs">
+                        <span className="text-[#FFF8F2]/64">{item.label}</span>
+                        <span className="font-mono font-bold text-[#FFF8F2]">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-[1.25rem] border border-[#FFF8F2]/10 bg-[#FFF8F2]/7 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFF8F2]/46">Policy explanation</p>
                   <p className="mt-2 text-xs leading-5 text-[#FFF8F2]/62">
                     Human approval is required before execution. Budget checks still happen inside the existing Tab backend for every spend request.
                   </p>
@@ -184,7 +230,7 @@ export function ApprovalCard({
                     </div>
                   )}
                 </div>
-                <div className="rounded-2xl border border-[#0E4A43]/45 bg-[#0E4A43]/18 p-4">
+                <div className="rounded-[1.25rem] border border-[#0E4A43]/45 bg-[#0E4A43]/18 p-4">
                   <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9BE3D6]">
                     <ShieldCheck className="h-3.5 w-3.5" />
                     Execution note
