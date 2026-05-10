@@ -11,12 +11,20 @@ const NAV_LINKS = [
   { label: "Trace", href: "#answer" },
 ];
 
+function getUserDisplay(): string {
+  // Replace with: (await supabase.auth.getUser()).data.user?.email ?? ""
+  const email = localStorage.getItem("tab_user_email") ?? "";
+  return email.split("@")[0] || email;
+}
+
 export function TopNav({ onNewRun }: TopNavProps) {
   const navigate = useNavigate();
+  const userDisplay = getUserDisplay();
 
   const signOut = () => {
     // await supabase.auth.signOut();
     localStorage.removeItem("tab_authed");
+    localStorage.removeItem("tab_user_email");
     navigate("/login");
   };
 
@@ -48,6 +56,11 @@ export function TopNav({ onNewRun }: TopNavProps) {
         </nav>
 
         <div className="flex items-center gap-3">
+          {userDisplay && (
+            <span className="hidden text-xs text-slate-400 sm:block">
+              Welcome, <span className="font-semibold text-slate-200">{userDisplay}</span>
+            </span>
+          )}
           <button
             onClick={signOut}
             className="hidden text-xs font-medium text-slate-600 transition-colors hover:text-slate-300 sm:block cursor-pointer"
