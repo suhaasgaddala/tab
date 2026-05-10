@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BudgetMeter } from "../components/BudgetMeter";
 import { FinalAnswer } from "../components/FinalAnswer";
 import { GoalForm } from "../components/GoalForm";
@@ -10,6 +10,122 @@ import { SpendRequestCard } from "../components/SpendRequestCard";
 import { TopNav } from "../components/TopNav";
 import { useTabRun } from "../hooks/useTabRun";
 import type { TabRunRequest } from "../lib/types";
+
+// ─── Staged loading steps (visual-only) ──────────────────────────────────────
+const LOADING_STAGES = [
+  { step: 1, label: "Reading budget policy", detail: "Fetching enforcement rules for this session" },
+  { step: 2, label: "Creating spend requests", detail: "Agent queuing paid-tool calls" },
+  { step: 3, label: "Auto-approving policy-safe calls", detail: "Evaluating each request against allowlist" },
+  { step: 4, label: "Writing receipts", detail: "Issuing cryptographic proofs via x402" },
+  { step: 5, label: "Closing Tab", detail: "Compiling spend trace and final answer" },
+];
+
+function StagedLoader() {
+  const [activeStage, setActiveStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStage((s) => (s < LOADING_STAGES.length - 1 ? s + 1 : s));
+    }, 1400);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      key="staged-loading"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      className="overflow-hidden rounded-2xl border border-green-500/10 bg-slate-800/60"
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 border-b border-slate-700/60 px-5 py-4">
+        <motion.span
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-green-400"
+        />
+        <div>
+          <p className="text-sm font-bold text-green-400">Tab open — agent running</p>
+          <p className="font-mono text-xs text-slate-500">
+            POST /v1/tab/run · waiting for spend trace
+          </p>
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="divide-y divide-slate-700/40">
+        {LOADING_STAGES.map((stage, i) => {
+          const done = i < activeStage;
+          const active = i === activeStage;
+          const pending = i > activeStage;
+
+          return (
+            <motion.div
+              key={stage.step}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: pending ? 0.35 : 1, x: 0 }}
+              transition={{ delay: i * 0.06, duration: 0.3 }}
+              className="flex items-center gap-4 px-5 py-3"
+            >
+              {/* Step indicator */}
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+                {done ? (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/15 text-green-400"
+                  >
+                    <svg viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
+                      <path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
+                    </svg>
+                  </motion.span>
+                ) : active ? (
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                    className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-green-400"
+                  />
+                ) : (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-700 font-mono text-[9px] text-slate-600">
+                    {stage.step}
+                  </span>
+                )}
+              </div>
+
+              {/* Label */}
+              <div className="min-w-0 flex-1">
+                <p className={`text-xs font-semibold ${done ? "text-slate-400" : active ? "text-slate-100" : "text-slate-600"}`}>
+                  {stage.label}
+                </p>
+                {active && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mt-0.5 font-mono text-[10px] text-slate-500"
+                  >
+                    {stage.detail}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Timing */}
+              {done && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="shrink-0 font-mono text-[9px] text-green-700"
+                >
+                  done
+                </motion.span>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
 
 // ─── Static tool catalog ──────────────────────────────────────────────────────
 const TOOL_CATALOG = [
@@ -56,7 +172,7 @@ const POLICY_RULES = [
 function ToolCatalogPanel() {
   const statusMeta = {
     available: {
-      badge: "border-emerald-500/20 bg-emerald-500/8 text-emerald-400",
+      badge: "border-green-500/20 bg-green-500/8 text-green-400",
       label: "Available",
     },
     conditional: {
@@ -70,25 +186,25 @@ function ToolCatalogPanel() {
   };
 
   return (
-    <section id="policy" className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
-      <div className="border-b border-zinc-800 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+    <section id="policy" className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
+      <div className="border-b border-slate-700 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
           Paid Tool Catalog
         </p>
-        <p className="mt-0.5 text-sm font-bold text-zinc-100">
+        <p className="mt-0.5 text-sm font-bold text-slate-100">
           Tools available to this agent
         </p>
       </div>
 
-      <div className="divide-y divide-zinc-800/60">
+      <div className="divide-y divide-slate-700/60">
         {TOOL_CATALOG.map((tool) => {
           const meta = statusMeta[tool.status];
           return (
             <div key={tool.id} className="px-5 py-4">
               <div className="mb-2 flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-mono text-sm font-bold text-zinc-100">{tool.id}</p>
-                  <p className="mt-0.5 text-[11px] text-zinc-500">
+                  <p className="font-mono text-sm font-bold text-slate-100">{tool.id}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500">
                     {tool.provider} · {tool.category}
                   </p>
                 </div>
@@ -99,8 +215,8 @@ function ToolCatalogPanel() {
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] leading-relaxed text-zinc-600">{tool.desc}</p>
-              <p className="mt-1.5 font-mono text-[10px] text-zinc-700">→ {tool.decision}</p>
+              <p className="text-[11px] leading-relaxed text-slate-600">{tool.desc}</p>
+              <p className="mt-1.5 font-mono text-[10px] text-slate-700">→ {tool.decision}</p>
             </div>
           );
         })}
@@ -112,26 +228,26 @@ function ToolCatalogPanel() {
 // ─── Policy Engine panel ──────────────────────────────────────────────────────
 function PolicyEnginePanel() {
   return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
-      <div className="border-b border-zinc-800 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
+      <div className="border-b border-slate-700 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
           Policy Engine
         </p>
-        <p className="mt-0.5 text-sm font-bold text-zinc-100">
+        <p className="mt-0.5 text-sm font-bold text-slate-100">
           Rules applied per spend request
         </p>
       </div>
 
-      <div className="divide-y divide-zinc-800/50 px-5">
+      <div className="divide-y divide-slate-700/50 px-5">
         {POLICY_RULES.map((rule) => (
           <div key={rule.label} className="flex items-center justify-between gap-4 py-2.5">
-            <span className="text-xs text-zinc-500">{rule.label}</span>
+            <span className="text-xs text-slate-500">{rule.label}</span>
             <span className={`font-mono text-[11px] font-semibold ${
               rule.type === "allowed"
-                ? "text-emerald-400"
+                ? "text-green-400"
                 : rule.type === "blocked"
                 ? "text-red-400"
-                : "text-zinc-400"
+                : "text-slate-400"
             }`}>
               {rule.value}
             </span>
@@ -139,8 +255,8 @@ function PolicyEnginePanel() {
         ))}
       </div>
 
-      <div className="border-t border-zinc-800 px-5 py-3">
-        <p className="font-mono text-[10px] text-zinc-700">
+      <div className="border-t border-slate-700 px-5 py-3">
+        <p className="font-mono text-[10px] text-slate-700">
           Policy-controlled paid tool access for agents
         </p>
       </div>
@@ -151,10 +267,10 @@ function PolicyEnginePanel() {
 // ─── Hero section ─────────────────────────────────────────────────────────────
 function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
   return (
-    <section className="relative overflow-hidden border-b border-zinc-800/60 pb-14 pt-10">
+    <section className="relative overflow-hidden border-b border-slate-700/60 pb-14 pt-10">
       <div className="tab-grid absolute inset-0 opacity-25" />
-      <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-amber-500/6 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full bg-emerald-500/4 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-green-500/5 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full bg-green-500/4 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         {/* Badges */}
@@ -163,11 +279,11 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 flex flex-wrap gap-2"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-amber-400">
-            <span className="h-1 w-1 animate-pulse-slow rounded-full bg-amber-400" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-green-400">
+            <span className="h-1 w-1 animate-pulse-slow rounded-full bg-green-400" />
             Reproducible judging mode
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
             Powered by x402 paid-tool backbone
           </span>
         </motion.div>
@@ -178,17 +294,17 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.06 }}
-              className="text-5xl font-extrabold leading-[1.06] tracking-tight text-zinc-50 sm:text-6xl lg:text-[4.5rem]"
+              className="font-mono text-5xl font-extrabold leading-[1.06] tracking-tight text-slate-50 sm:text-6xl lg:text-[4.5rem]"
             >
               The spend layer<br />
-              for <span className="text-amber-400">AI agents.</span>
+              for <span className="text-green-400">AI agents.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.13 }}
-              className="mt-5 max-w-xl text-lg leading-relaxed text-zinc-400"
+              className="mt-5 max-w-xl text-lg leading-relaxed text-slate-400"
             >
               Give agents controlled access to paid tools — with budgets,
               policy-based spend approval, and an auditable receipt trace
@@ -203,7 +319,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
             >
               <button
                 onClick={onRunDemo}
-                className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_0_24px_rgba(245,158,11,0.2)] transition-all hover:bg-amber-400 hover:shadow-[0_0_36px_rgba(245,158,11,0.35)]"
+                className="inline-flex items-center gap-2 rounded-xl bg-green-500 px-6 py-3 text-sm font-bold text-slate-950 shadow-[0_0_24px_rgba(34,197,94,0.2)] transition-all hover:bg-green-400 hover:shadow-[0_0_36px_rgba(34,197,94,0.35)] cursor-pointer"
               >
                 Run Agent Demo
                 <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
@@ -212,7 +328,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
               </button>
               <a
                 href="#answer"
-                className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-6 py-3 text-sm font-bold text-zinc-400 transition-all hover:border-zinc-500 hover:text-zinc-200"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3 text-sm font-bold text-slate-400 transition-all hover:border-slate-500 hover:text-slate-200"
               >
                 View Spend Trace
               </a>
@@ -235,12 +351,12 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
             ].map((item) => (
               <div
                 key={item.step}
-                className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-2.5"
+                className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5"
               >
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-500/20 bg-amber-500/8 font-mono text-[10px] font-bold text-amber-400">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green-500/20 bg-green-500/8 font-mono text-[10px] font-bold text-green-400">
                   {item.step}
                 </span>
-                <p className="text-xs text-zinc-400">{item.label}</p>
+                <p className="text-xs text-slate-400">{item.label}</p>
               </div>
             ))}
           </motion.div>
@@ -274,7 +390,7 @@ export default function DashboardPage() {
   const isLoading = state.status === "loading";
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-slate-900">
       <TopNav onNewRun={handleReset} />
 
       <HeroSection onRunDemo={scrollToForm} />
@@ -285,29 +401,7 @@ export default function DashboardPage() {
           <GoalForm isLoading={isLoading} onSubmit={handleRun} />
 
           <AnimatePresence mode="wait">
-            {isLoading && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="rounded-2xl border border-amber-500/10 bg-amber-500/5 px-5 py-4"
-              >
-                <div className="flex items-center gap-3">
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="h-4 w-4 rounded-full border-2 border-amber-900 border-t-amber-400"
-                  />
-                  <div>
-                    <p className="text-sm font-bold text-amber-400">Tab open — agent running</p>
-                    <p className="font-mono text-xs text-zinc-500">
-                      POST /v1/tab/run — waiting for spend trace
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+            {isLoading && <StagedLoader />}
 
             {state.status === "error" && (
               <motion.div
@@ -335,14 +429,14 @@ export default function DashboardPage() {
                 <section id="requests" className="space-y-3">
                   <div className="flex items-end justify-between">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
                         Spend Requests
                       </p>
-                      <h2 className="mt-0.5 text-base font-bold text-zinc-50">
+                      <h2 className="mt-0.5 text-base font-bold text-slate-50">
                         Policy check before every paid call
                       </h2>
                     </div>
-                    <span className="rounded-full border border-zinc-700 px-3 py-0.5 font-mono text-[10px] text-zinc-500">
+                    <span className="rounded-full border border-slate-700 px-3 py-0.5 font-mono text-[10px] text-slate-500">
                       {result.spendRequests.length} evaluated
                     </span>
                   </div>
@@ -376,11 +470,11 @@ export default function DashboardPage() {
               <ToolCatalogPanel />
               <PolicyEnginePanel />
               {lastInput && (
-                <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+                <section className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">
                     Last submitted
                   </p>
-                  <p className="text-xs leading-relaxed text-zinc-400">{lastInput.goal}</p>
+                  <p className="text-xs leading-relaxed text-slate-400">{lastInput.goal}</p>
                 </section>
               )}
             </>

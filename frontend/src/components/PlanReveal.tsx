@@ -6,15 +6,15 @@ interface PlanRevealProps {
 
 export function PlanReveal({ plan }: PlanRevealProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900" id="plan">
-      <div className="border-b border-zinc-800 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400">Agent Plan</p>
-        <p className="mt-0.5 text-sm font-bold text-zinc-100">Reasoning before first tool call</p>
+    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800" id="plan">
+      <div className="border-b border-slate-700 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">Agent Plan</p>
+        <p className="mt-0.5 text-sm font-bold text-slate-100">Reasoning before first tool call</p>
       </div>
 
       <div className="relative p-5">
         {/* Vertical timeline line */}
-        <div className="absolute bottom-5 left-[33px] top-5 w-px bg-zinc-800" />
+        <div className="absolute bottom-5 left-[33px] top-5 w-px bg-slate-700" />
 
         <ol className="space-y-5">
           {plan.map((step, i) => (
@@ -26,12 +26,12 @@ export function PlanReveal({ plan }: PlanRevealProps) {
               className="relative flex items-start gap-4"
             >
               {/* Step circle — sits on the timeline line */}
-              <span className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-500/25 bg-zinc-950 font-mono text-[10px] font-bold text-amber-400">
+              <span className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-500/25 bg-slate-900 font-mono text-[10px] font-bold text-green-400">
                 {i + 1}
               </span>
 
               <div className="flex-1 pt-0.5">
-                <p className="text-sm leading-relaxed text-zinc-400">{step}</p>
+                <p className="text-sm leading-relaxed text-slate-400">{step}</p>
               </div>
 
               {/* Completion dot */}
@@ -39,7 +39,7 @@ export function PlanReveal({ plan }: PlanRevealProps) {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: i * 0.1 + 0.3 }}
-                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"
+                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500"
               />
             </motion.li>
           ))}

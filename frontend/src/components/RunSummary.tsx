@@ -13,13 +13,13 @@ export function RunSummary({ result }: RunSummaryProps) {
   ];
 
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 shadow-card">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-4">Run trace</p>
+    <section className="rounded-2xl border border-slate-700 bg-slate-800 p-4 shadow-card">
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-4">Run trace</p>
       <div className="space-y-3">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center justify-between gap-4">
-            <span className="text-xs text-zinc-500">{stat.label}</span>
-            <span className="font-mono text-xs font-bold text-zinc-200">{stat.value}</span>
+            <span className="text-xs text-slate-500">{stat.label}</span>
+            <span className="font-mono text-xs font-bold text-slate-200">{stat.value}</span>
           </div>
         ))}
       </div>

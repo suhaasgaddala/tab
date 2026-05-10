@@ -21,21 +21,21 @@ function AnimatedUsd({ value }: { value: number }) {
 
 export function BudgetMeter({ startingBudgetUsd, totalSpentUsd, remainingBudgetUsd }: BudgetMeterProps) {
   const used = startingBudgetUsd > 0 ? Math.min(100, (totalSpentUsd / startingBudgetUsd) * 100) : 0;
-  const barColor = used < 50 ? "#10b981" : used < 85 ? "#f59e0b" : "#ef4444";
+  const barColor = used < 50 ? "#22c55e" : used < 85 ? "#f59e0b" : "#ef4444";
 
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-card"
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card"
     >
-      <div className="border-b border-zinc-800 px-4 py-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
+      <div className="border-b border-slate-700 px-4 py-3">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
           Set a limit
         </p>
       </div>
       <div className="p-4">
-        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-zinc-800">
+        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-slate-700">
           <motion.div
             className="h-full rounded-full"
             initial={{ width: 0, backgroundColor: barColor }}
@@ -51,17 +51,17 @@ export function BudgetMeter({ startingBudgetUsd, totalSpentUsd, remainingBudgetU
               <AnimatedUsd value={totalSpentUsd} />
             </p>
           </div>
-          <div className="rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-3">
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600">Remaining</span>
-            <p className="mt-1 font-mono text-lg font-black text-emerald-400">
+          <div className="rounded-xl border border-green-500/10 bg-green-500/5 p-3">
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-green-600">Remaining</span>
+            <p className="mt-1 font-mono text-lg font-black text-green-400">
               <AnimatedUsd value={remainingBudgetUsd} />
             </p>
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-zinc-800 pt-3 text-xs text-zinc-600 font-mono">
+        <div className="mt-4 flex items-center justify-between border-t border-slate-700 pt-3 text-xs text-slate-600 font-mono">
           <span>Starting budget</span>
-          <span className="font-semibold text-zinc-400">${startingBudgetUsd.toFixed(4).replace(/0$/, "")}</span>
+          <span className="font-semibold text-slate-400">${startingBudgetUsd.toFixed(4).replace(/0$/, "")}</span>
         </div>
       </div>
     </motion.section>
