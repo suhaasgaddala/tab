@@ -28,9 +28,6 @@ export function FinalAnswer({ result }: FinalAnswerProps) {
       </div>
       <div className="p-5">
         <p className="text-sm leading-7 text-slate-300">{result.finalAnswer}</p>
-        <p className="mt-5 rounded-xl border border-amber-500/10 bg-amber-500/5 px-4 py-3 font-mono text-xs leading-relaxed text-amber-700">
-          {result.hackathonScopeNote}
-        </p>
       </div>
     </motion.section>
   );

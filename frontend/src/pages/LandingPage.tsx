@@ -561,9 +561,6 @@ function ExpenseReport({ result }: { result: TabRunResult }) {
       <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-3">Final answer</p>
         <p className="text-sm leading-7 text-slate-300">{result.finalAnswer}</p>
-        <p className="mt-4 rounded-xl border border-amber-500/10 bg-amber-500/5 px-4 py-3 text-xs text-amber-700 font-mono leading-relaxed">
-          {result.hackathonScopeNote}
-        </p>
       </div>
     </motion.div>
   );
@@ -778,13 +775,13 @@ function ScopeSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid gap-12 lg:grid-cols-2 items-start">
           <FadeUp>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">Hackathon scope</p>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-green-400">Architecture</p>
             <h2 className="font-mono text-3xl font-extrabold tracking-tight text-slate-50">
               x402 router is the backbone.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-slate-400">
               The existing x402 router handles payment execution and the paid-tool catalog.
-              The Tab spend-control layer — budgets, policy engine, spend requests, and receipts — was built during the hackathon on top of that backbone.
+              The Tab spend-control layer — budgets, policy engine, spend requests, and receipts — sits on top of that backbone.
             </p>
           </FadeUp>
 
@@ -798,7 +795,7 @@ function ScopeSection() {
               },
               {
                 label: "Tab spend layer",
-                tag: "Built at hackathon",
+                tag: "Tab spend layer",
                 tagColor: "text-green-500 border-green-500/30",
                 items: ["Budget enforcement", "Policy engine", "Spend requests", "Auto-approvals", "Cryptographic receipts", "Spend trace"],
               },
@@ -868,7 +865,7 @@ function Footer() {
             <span className="text-sm font-bold text-slate-50">Tab</span>
             <span className="text-slate-700 text-xs font-mono ml-2">— The spend layer for AI agents.</span>
           </div>
-          <p className="text-xs text-slate-700 font-mono">Built on x402 · Base · Hackathon 2026</p>
+          <p className="text-xs text-slate-700 font-mono">Built on x402 · Base · 2026</p>
         </div>
       </div>
     </footer>
