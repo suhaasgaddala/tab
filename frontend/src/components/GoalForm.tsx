@@ -66,14 +66,11 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
       transition={{ duration: 0.35 }}
       className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card-lg"
     >
-      {/* ── Judging mode scenario selector ── */}
+      {/* ── Scenario presets ── */}
       <div className="border-b border-slate-700 px-5 py-4">
-        <div className="mb-3 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse-slow rounded-full bg-green-400" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-green-400">
-            Reproducible judging mode
-          </span>
-        </div>
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          Scenario
+        </p>
         <div className="grid grid-cols-2 gap-2">
           {(["happy", "constrained"] as const).map((key) => {
             const p = PRESETS[key];

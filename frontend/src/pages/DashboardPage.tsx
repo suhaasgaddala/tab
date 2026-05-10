@@ -279,10 +279,6 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 flex flex-wrap gap-2"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-green-400">
-            <span className="h-1 w-1 animate-pulse-slow rounded-full bg-green-400" />
-            Reproducible judging mode
-          </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
             Powered by x402 paid-tool backbone
           </span>
