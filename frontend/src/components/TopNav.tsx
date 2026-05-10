@@ -55,7 +55,7 @@ export function TopNav({ onNewRun }: TopNavProps) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {userDisplay && (
             <span className="hidden text-xs text-slate-400 sm:block">
               Welcome, <span className="font-semibold text-slate-200">{userDisplay}</span>
@@ -66,12 +66,6 @@ export function TopNav({ onNewRun }: TopNavProps) {
             className="hidden text-xs font-medium text-slate-600 transition-colors hover:text-slate-300 sm:block cursor-pointer"
           >
             Sign out
-          </button>
-          <button
-            onClick={onNewRun}
-            className="rounded-lg border border-green-500/30 bg-green-500/10 px-3.5 py-1.5 text-xs font-bold text-green-400 transition-all hover:border-green-500/50 hover:bg-green-500/20 cursor-pointer"
-          >
-            Open a Tab
           </button>
         </div>
       </div>
