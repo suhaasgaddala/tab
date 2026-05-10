@@ -67,14 +67,14 @@ export function RunSummary({ result, request }: RunSummaryProps) {
   ];
 
   return (
-    <section className="rounded-2xl border border-slate-700 bg-slate-800 shadow-card overflow-hidden">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 px-4 pt-4 mb-4">Run trace</p>
+    <section className="tab-card overflow-hidden rounded-2xl">
+      <p className="mb-4 px-4 pt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/44">Run trace</p>
 
       <div className="space-y-3 px-4">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center justify-between gap-4">
-            <span className="text-xs text-slate-500">{stat.label}</span>
-            <span className="font-mono text-xs font-bold text-slate-200">{stat.value}</span>
+            <span className="text-xs text-[#FFF8F2]/45">{stat.label}</span>
+            <span className="font-mono text-xs font-bold text-[#FFF8F2]">{stat.value}</span>
           </div>
         ))}
       </div>
@@ -86,7 +86,7 @@ export function RunSummary({ result, request }: RunSummaryProps) {
           onClick={() => setOpen((v) => !v)}
           className="flex w-full items-center justify-between gap-3 cursor-pointer group"
         >
-          <span className="text-xs text-slate-500">Confidence</span>
+          <span className="text-xs text-[#FFF8F2]/45">Confidence</span>
           <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest transition-opacity group-hover:opacity-80 ${meta.border} ${meta.bg} ${meta.color}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
             {result.confidence}
@@ -113,7 +113,7 @@ export function RunSummary({ result, request }: RunSummaryProps) {
                 <p className={`text-[10px] font-bold uppercase tracking-widest mb-1.5 ${meta.color}`}>
                   {meta.title}
                 </p>
-                <p className="text-[11px] leading-relaxed text-slate-400">
+                <p className="text-[11px] leading-relaxed text-[#FFF8F2]/62">
                   {meta.explanation}
                 </p>
               </div>

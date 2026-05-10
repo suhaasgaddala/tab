@@ -29,16 +29,16 @@ export function TopNav({ onNewRun }: TopNavProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-700/60 bg-slate-900/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[#FFF8F2]/12 bg-[#241C19]/88 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <button onClick={onNewRun} className="group flex items-center gap-2.5 cursor-pointer" type="button">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white transition-all group-hover:shadow-glow"
+        <button onClick={onNewRun} className="group flex cursor-pointer items-center gap-2.5 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/60" type="button">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,88,72,0.22)] transition-all group-hover:shadow-[0_18px_36px_rgba(255,88,72,0.34)]"
             style={{ background: "#FF5848" }}>
             T
           </span>
           <span className="hidden flex-col text-left sm:flex">
             <span className="text-sm font-semibold tracking-tight text-[#FFF8F2]">Tab</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-500">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#FFF8F2]/42">
               spend layer
             </span>
           </span>
@@ -49,7 +49,7 @@ export function TopNav({ onNewRun }: TopNavProps) {
             <a
               key={link.label}
               href={link.href}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-200"
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-[#FFF8F2]/54 transition-colors hover:bg-[#FFF8F2]/8 hover:text-[#FFF8F2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/50"
             >
               {link.label}
             </a>
@@ -58,13 +58,13 @@ export function TopNav({ onNewRun }: TopNavProps) {
 
         <div className="flex items-center gap-4">
           {userDisplay && (
-            <span className="hidden text-xs text-slate-400 sm:block">
-              Welcome, <span className="font-semibold text-slate-200">{userDisplay}</span>
+            <span className="hidden text-xs text-[#FFF8F2]/56 sm:block">
+              Welcome, <span className="font-semibold text-[#FFF8F2]">{userDisplay}</span>
             </span>
           )}
           <button
             onClick={signOut}
-            className="hidden text-xs font-medium text-slate-600 transition-colors hover:text-slate-300 sm:block cursor-pointer"
+            className="hidden cursor-pointer rounded-md text-xs font-medium text-[#FFF8F2]/42 transition-colors hover:text-[#FF6A5D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/50 sm:block"
           >
             Sign out
           </button>

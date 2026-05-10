@@ -20,11 +20,11 @@ import {
 import { Link } from "react-router-dom";
 
 const navItems = [
-  { label: "Product", chevron: true },
-  { label: "Developers" },
-  { label: "Use Cases", chevron: true },
-  { label: "Docs" },
-  { label: "Pricing" },
+  { label: "Product", href: "#workflow", chevron: true },
+  { label: "Developers", href: "#workflow" },
+  { label: "Use Cases", href: "#workflow", chevron: true },
+  { label: "Docs", href: "#workflow" },
+  { label: "Pricing", href: "#workflow" },
 ];
 
 const featureChips = [
@@ -81,6 +81,50 @@ const bottomNav = [
   { label: "Settings", Icon: Settings },
 ];
 
+const footerColumns = [
+  {
+    title: "Get Started",
+    links: [
+      { label: "Open a Tab", href: "/dashboard", route: true },
+      { label: "Sign in", href: "/login", route: true },
+    ],
+  },
+  {
+    title: "Product",
+    links: [
+      { label: "Budget controls", href: "#workflow" },
+      { label: "Spend requests", href: "#workflow" },
+      { label: "Receipt ledger", href: "#workflow" },
+      { label: "Policy approvals", href: "#workflow" },
+    ],
+  },
+  {
+    title: "Developers",
+    links: [
+      { label: "Docs", href: "#top" },
+      { label: "API", href: "#top" },
+      { label: "x402 router", href: "#top" },
+      { label: "Bazaar metadata", href: "#top" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "Hackathon scope", href: "#top" },
+      { label: "About", href: "#top" },
+      { label: "Contact", href: "#top" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "#top" },
+      { label: "Terms", href: "#top" },
+      { label: "Not financial advice", href: "#top" },
+    ],
+  },
+];
+
 function LandingNav() {
   return (
     <motion.header
@@ -104,7 +148,7 @@ function LandingNav() {
           {navItems.map((item) => (
             <a
               key={item.label}
-              href="#"
+              href={item.href}
               className="group inline-flex items-center gap-1.5 rounded-md outline-none transition-opacity hover:opacity-75 focus-visible:ring-2 focus-visible:ring-[#FF6A5D]/70"
             >
               <span className="relative after:absolute after:-bottom-2 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#FFF8F2]/70 after:transition-transform group-hover:after:scale-x-100">
@@ -447,7 +491,7 @@ function WorkflowPill() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.72, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-      className="relative z-40 mt-12 w-full overflow-x-auto pb-2 lg:fixed lg:bottom-[3.8vh] lg:left-[4.2vw] lg:mt-0 lg:w-auto lg:origin-left lg:scale-[0.86] lg:overflow-visible lg:pb-0 xl:bottom-[8.5vh] xl:scale-100"
+      className="relative z-40 mt-12 w-full overflow-x-auto pb-2 lg:absolute lg:bottom-[3.8vh] lg:left-[4.2vw] lg:mt-0 lg:w-auto lg:origin-left lg:scale-[0.86] lg:overflow-visible lg:pb-0 xl:bottom-[8.5vh] xl:scale-100"
     >
       <div className="flex w-max items-center gap-3 rounded-full bg-[#F8F2EA] px-5 py-3.5 text-[#17110F] shadow-[0_22px_54px_rgba(28,18,15,0.22)] sm:gap-5 sm:px-8 sm:py-4">
         {workflowSteps.map(({ label, Icon }, index) => (
@@ -467,11 +511,96 @@ function WorkflowPill() {
   );
 }
 
+function LandingFooter() {
+  return (
+    <footer className="relative z-20 overflow-hidden bg-[#FFF8F2] text-[#241C19]">
+      <div className="pointer-events-none absolute -right-28 top-0 h-72 w-72 rounded-full bg-[#F0B28C]/45 blur-3xl" />
+      <div className="pointer-events-none absolute -left-24 bottom-16 h-64 w-64 rounded-full bg-[#FF5848]/10 blur-3xl" />
+
+      <div className="relative mx-auto max-w-[1680px] px-5 pb-[clamp(1.5rem,2vw,2.6rem)] pt-16 sm:px-8 lg:px-[4.3vw] lg:pt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="grid gap-10 border-b border-[#241C19]/10 pb-12 lg:grid-cols-[1.08fr_2fr]"
+        >
+          <div>
+            <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[#FF5848]">
+              Agent spend infrastructure
+            </p>
+            <h2 className="mt-4 max-w-xl text-[clamp(2.4rem,4vw,5rem)] font-semibold leading-[0.98] tracking-[-0.065em]">
+              Controlled paid-tool access for autonomous teams.
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-7 text-[#241C19]/62">
+              Budget controls, policy approvals, and receipts for every agent run.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+            {footerColumns.map((column) => (
+              <div key={column.title}>
+                <h3 className="text-sm font-semibold text-[#FF5848]">{column.title}</h3>
+                <ul className="mt-4 space-y-3">
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      {"route" in link && link.route ? (
+                        <Link
+                          to={link.href}
+                          className="rounded-md text-sm font-medium text-[#241C19]/74 outline-none transition-colors hover:text-[#FF5848] focus-visible:ring-2 focus-visible:ring-[#FF5848]/40"
+                        >
+                          {link.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="rounded-md text-sm font-medium text-[#241C19]/74 outline-none transition-colors hover:text-[#FF5848] focus-visible:ring-2 focus-visible:ring-[#FF5848]/40"
+                        >
+                          {link.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="relative flex flex-col gap-8 pt-8 lg:min-h-[28vw]">
+          <div className="flex flex-col justify-between gap-4 text-sm text-[#241C19]/52 sm:flex-row">
+            <p>© 2026 Tab. Agent spend infrastructure for autonomous tool use.</p>
+            <div className="flex gap-4">
+              <a href="#top" className="rounded-md font-medium text-[#241C19]/62 transition-colors hover:text-[#FF5848] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/40">
+                Back to top
+              </a>
+              <Link to="/dashboard" className="rounded-md font-medium text-[#FF5848] transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5848]/40">
+                Open a Tab
+              </Link>
+            </div>
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-14%" }}
+            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+            className="pointer-events-none -mb-[6vw] select-none text-[clamp(13rem,37vw,43rem)] font-black leading-[0.72] tracking-[-0.12em] text-[#FF5848]"
+            aria-hidden="true"
+          >
+            Tab
+          </motion.p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export default function LandingPage() {
   return (
     <div
       id="top"
-      className="relative min-h-screen overflow-hidden bg-[#2B211E] font-sans text-[#FFF8F2] lg:h-screen"
+      className="relative min-h-screen overflow-x-hidden bg-[#2B211E] font-sans text-[#FFF8F2]"
       style={{
         fontFamily:
           'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
@@ -480,7 +609,7 @@ export default function LandingPage() {
       <BackgroundSculpture />
       <LandingNav />
 
-      <main className="relative z-10 min-h-screen px-5 sm:px-8 lg:h-screen lg:min-h-0 lg:px-[4.3vw]">
+      <main className="relative z-10 min-h-screen overflow-hidden px-5 sm:px-8 lg:h-screen lg:min-h-0 lg:px-[4.3vw]">
         <div className="grid min-h-screen items-center gap-10 pt-20 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,0.95fr)_minmax(390px,0.72fr)] lg:gap-2 lg:pt-0">
           <HeroCopy />
           <div className="relative flex min-h-[600px] items-center justify-center pb-32 pt-6 lg:min-h-0 lg:translate-x-4 lg:self-start lg:items-start lg:justify-end lg:pb-0 lg:pt-[4.6rem] xl:translate-x-0">
@@ -489,6 +618,8 @@ export default function LandingPage() {
         </div>
         <WorkflowPill />
       </main>
+
+      <LandingFooter />
     </div>
   );
 }

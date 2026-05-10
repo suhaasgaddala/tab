@@ -27,15 +27,15 @@ export function BudgetMeter({ startingBudgetUsd, totalSpentUsd, remainingBudgetU
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card"
+      className="tab-card overflow-hidden rounded-2xl"
     >
-      <div className="border-b border-slate-700 px-4 py-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+      <div className="border-b border-[#FFF8F2]/10 px-4 py-3">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/44">
           Set a limit
         </p>
       </div>
       <div className="p-4">
-        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-slate-700">
+        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-[#FFF8F2]/14">
           <motion.div
             className="h-full rounded-full"
             initial={{ width: 0, backgroundColor: barColor }}
@@ -59,9 +59,9 @@ export function BudgetMeter({ startingBudgetUsd, totalSpentUsd, remainingBudgetU
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-slate-700 pt-3 text-xs text-slate-600 font-mono">
+        <div className="mt-4 flex items-center justify-between border-t border-[#FFF8F2]/10 pt-3 text-xs text-[#FFF8F2]/40 font-mono">
           <span>Starting budget</span>
-          <span className="font-semibold text-slate-400">${startingBudgetUsd.toFixed(4).replace(/0$/, "")}</span>
+          <span className="font-semibold text-[#FFF8F2]/70">${startingBudgetUsd.toFixed(4).replace(/0$/, "")}</span>
         </div>
       </div>
     </motion.section>

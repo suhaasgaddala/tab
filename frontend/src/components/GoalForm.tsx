@@ -74,7 +74,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition focus:border-[#FF5848]/50 focus:ring-2 focus:ring-[#FF5848]/10";
+    "w-full rounded-xl border border-[#FFF8F2]/12 bg-[#1E1917]/50 px-4 py-3 text-sm text-[#FFF8F2] placeholder:text-[#FFF8F2]/30 outline-none transition focus:border-[#FF5848]/55 focus:ring-2 focus:ring-[#FF5848]/14";
 
   return (
     <motion.form
@@ -82,10 +82,10 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card-lg"
+      className="tab-card overflow-hidden rounded-2xl"
     >
       {/* ── Scenario presets ── */}
-      <div className="border-b border-slate-700 px-5 py-4">
+      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
         <div className="mb-3 flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse-slow rounded-full" style={{ background: "#FF5848" }} />
           <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#FF5848" }}>
@@ -103,14 +103,14 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
                 onClick={() => applyPreset(key)}
                 className={`rounded-xl border px-3.5 py-3 text-left transition-all cursor-pointer ${
                   active
-                    ? "border-[#FF5848]/40 bg-[#FF5848]/8"
-                    : "border-slate-700 bg-slate-900 hover:border-slate-600"
+                    ? "border-[#FF5848]/44 bg-[#FF5848]/10"
+                    : "border-[#FFF8F2]/12 bg-[#1E1917]/40 hover:border-[#FFF8F2]/24 hover:bg-[#FFF8F2]/6"
                 }`}
               >
-                <p className={`text-xs font-bold ${active ? "text-slate-100" : "text-slate-400"}`}>
+                <p className={`text-xs font-bold ${active ? "text-[#FFF8F2]" : "text-[#FFF8F2]/62"}`}>
                   {p.label}
                 </p>
-                <p className="mt-0.5 text-[10px] leading-snug text-slate-600">{p.desc}</p>
+                <p className="mt-0.5 text-[10px] leading-snug text-[#FFF8F2]/38">{p.desc}</p>
               </button>
             );
           })}
@@ -121,11 +121,11 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
       <div className="space-y-4 px-5 py-5">
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label htmlFor="goal" className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+            <label htmlFor="goal" className="text-xs font-semibold uppercase tracking-[0.14em] text-[#FFF8F2]/44">
               Agent goal
             </label>
             {scenario === "custom" && (
-              <span className="rounded-full border border-slate-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-600">
+              <span className="rounded-full border border-[#FFF8F2]/14 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#FFF8F2]/38">
                 Custom
               </span>
             )}
@@ -140,7 +140,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
         </div>
 
         <div>
-          <label htmlFor="token" className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+          <label htmlFor="token" className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#FFF8F2]/44">
             Token / asset address
           </label>
           <input
@@ -149,7 +149,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
             onChange={(e) => { setToken(e.target.value); setScenario("custom"); }}
             className={`${inputClass} font-mono text-xs`}
           />
-          <p className="mt-1.5 text-xs text-slate-600">
+          <p className="mt-1.5 text-xs text-[#FFF8F2]/42">
             Default demo asset: USDC on Base.
           </p>
         </div>
@@ -157,7 +157,7 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
         <div className="grid gap-4 sm:grid-cols-[1fr_150px]">
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <label htmlFor="budget" className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <label htmlFor="budget" className="text-xs font-semibold uppercase tracking-[0.14em] text-[#FFF8F2]/44">
                 Agent budget
               </label>
               <span className="font-mono text-sm font-bold text-amber-400">
@@ -185,16 +185,16 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
                 onChange={(e) => { setBudget(coercePositiveNumber(e.target.value, budget)); setScenario("custom"); }}
                 className={`${inputClass} h-10 max-w-[132px] px-3 py-2 font-mono text-xs`}
               />
-              <div className="flex flex-1 justify-between font-mono text-[10px] text-slate-700">
+              <div className="flex flex-1 justify-between font-mono text-[10px] text-[#FFF8F2]/30">
                 <span>$0.005</span>
                 <span>$0.100</span>
               </div>
             </div>
-            <div className="mt-3 rounded-xl border border-amber-500/10 bg-amber-500/5 px-3 py-2">
+            <div className="mt-3 rounded-xl border border-[#F0B28C]/22 bg-[#F0B28C]/10 px-3 py-2">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-500/80">
                 Policy threshold
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500">
+              <p className="mt-1 text-xs leading-relaxed text-[#FFF8F2]/54">
                 market-signal costs $0.020; model-call costs $0.001; both tools require about $0.021.
                 Budgets above this threshold may run the same two-tool plan; the remaining balance changes.
               </p>
@@ -203,10 +203,10 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
 
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <label htmlFor="calls" className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <label htmlFor="calls" className="text-xs font-semibold uppercase tracking-[0.14em] text-[#FFF8F2]/44">
                 Max calls
               </label>
-              <span className="font-mono text-sm font-bold text-slate-300">{maxToolCalls}</span>
+              <span className="font-mono text-sm font-bold text-[#FFF8F2]">{maxToolCalls}</span>
             </div>
             <input
               id="calls"
@@ -220,33 +220,33 @@ export function GoalForm({ isLoading, onSubmit }: GoalFormProps) {
           </div>
         </div>
 
-        <section className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+        <section className="rounded-xl border border-[#FFF8F2]/12 bg-[#1E1917]/58 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
               Request payload
             </p>
-            <span className="font-mono text-[10px] text-slate-600">POST /v1/tab/run</span>
+            <span className="font-mono text-[10px] text-[#FFF8F2]/38">POST /v1/tab/run</span>
           </div>
           <dl className="grid gap-2 text-xs">
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-600">budget_usd</dt>
+              <dt className="text-[#FFF8F2]/38">budget_usd</dt>
               <dd className="font-mono font-bold text-amber-400">{requestPayload.budget_usd}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-600">max_tool_calls</dt>
-              <dd className="font-mono font-bold text-slate-200">{requestPayload.max_tool_calls}</dd>
+              <dt className="text-[#FFF8F2]/38">max_tool_calls</dt>
+              <dd className="font-mono font-bold text-[#FFF8F2]">{requestPayload.max_tool_calls}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-600">chain</dt>
-              <dd className="font-mono font-bold text-slate-200">{requestPayload.chain}</dd>
+              <dt className="text-[#FFF8F2]/38">chain</dt>
+              <dd className="font-mono font-bold text-[#FFF8F2]">{requestPayload.chain}</dd>
             </div>
             <div>
-              <dt className="text-slate-600">token</dt>
-              <dd className="mt-0.5 break-all font-mono text-[11px] text-slate-300">{requestPayload.token}</dd>
+              <dt className="text-[#FFF8F2]/38">token</dt>
+              <dd className="mt-0.5 break-all font-mono text-[11px] text-[#FFF8F2]/70">{requestPayload.token}</dd>
             </div>
             <div>
-              <dt className="text-slate-600">goal</dt>
-              <dd className="mt-0.5 text-slate-300">{requestPayload.goal}</dd>
+              <dt className="text-[#FFF8F2]/38">goal</dt>
+              <dd className="mt-0.5 text-[#FFF8F2]/70">{requestPayload.goal}</dd>
             </div>
           </dl>
         </section>

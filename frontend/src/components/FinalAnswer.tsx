@@ -11,14 +11,14 @@ export function FinalAnswer({ result }: FinalAnswerProps) {
       id="answer"
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 shadow-card"
+      className="tab-card overflow-hidden rounded-2xl"
     >
-      <div className="border-b border-slate-700 px-5 py-4">
+      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">
           Close the Tab
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-slate-600 bg-slate-700 px-3 py-0.5 text-xs font-semibold text-slate-300">
+          <span className="rounded-full border border-[#FFF8F2]/14 bg-[#FFF8F2]/8 px-3 py-0.5 text-xs font-semibold text-[#FFF8F2]/72">
             {result.status.replace("_", " ")}
           </span>
           <span className="rounded-full border border-green-500/20 bg-green-500/8 px-3 py-0.5 text-xs font-semibold text-green-400">
@@ -27,7 +27,7 @@ export function FinalAnswer({ result }: FinalAnswerProps) {
         </div>
       </div>
       <div className="p-5">
-        <p className="text-sm leading-7 text-slate-300">{result.finalAnswer}</p>
+        <p className="text-sm leading-7 text-[#FFF8F2]/72">{result.finalAnswer}</p>
       </div>
     </motion.section>
   );

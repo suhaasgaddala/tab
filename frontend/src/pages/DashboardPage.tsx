@@ -36,25 +36,25 @@ function StagedLoader() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      className="overflow-hidden rounded-2xl border border-[#FF5848]/10 bg-slate-800/60"
+      className="tab-card overflow-hidden rounded-2xl"
     >
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-slate-700/60 px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-[#FFF8F2]/10 px-5 py-4">
         <motion.span
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-[#FF5848]"
+          className="h-4 w-4 rounded-full border-2 border-[#FFF8F2]/18 border-t-[#FF5848]"
         />
         <div>
           <p className="text-sm font-bold text-[#FF5848]">Tab open — agent running</p>
-          <p className="font-mono text-xs text-slate-500">
+          <p className="font-mono text-xs text-[#FFF8F2]/42">
             POST /v1/tab/run · waiting for spend trace
           </p>
         </div>
       </div>
 
       {/* Steps */}
-      <div className="divide-y divide-slate-700/40">
+      <div className="divide-y divide-[#FFF8F2]/10">
         {LOADING_STAGES.map((stage, i) => {
           const done = i < activeStage;
           const active = i === activeStage;
@@ -84,10 +84,10 @@ function StagedLoader() {
                   <motion.span
                     animate={{ rotate: 360 }}
                     transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                    className="h-4 w-4 rounded-full border-2 border-slate-600 border-t-[#FF5848]"
+                    className="h-4 w-4 rounded-full border-2 border-[#FFF8F2]/18 border-t-[#FF5848]"
                   />
                 ) : (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-700 font-mono text-[9px] text-slate-600">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border border-[#FFF8F2]/12 font-mono text-[9px] text-[#FFF8F2]/34">
                     {stage.step}
                   </span>
                 )}
@@ -95,14 +95,14 @@ function StagedLoader() {
 
               {/* Label */}
               <div className="min-w-0 flex-1">
-                <p className={`text-xs font-semibold ${done ? "text-slate-400" : active ? "text-slate-100" : "text-slate-600"}`}>
+                <p className={`text-xs font-semibold ${done ? "text-[#FFF8F2]/58" : active ? "text-[#FFF8F2]" : "text-[#FFF8F2]/34"}`}>
                   {stage.label}
                 </p>
                 {active && (
                   <motion.p
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-0.5 font-mono text-[10px] text-slate-500"
+                    className="mt-0.5 font-mono text-[10px] text-[#FFF8F2]/42"
                   >
                     {stage.detail}
                   </motion.p>
@@ -186,25 +186,25 @@ function ToolCatalogPanel() {
   };
 
   return (
-    <section id="policy" className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
-      <div className="border-b border-slate-700 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+      <section id="policy" className="tab-card overflow-hidden rounded-2xl">
+      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/42">
           Paid Tool Catalog
         </p>
-        <p className="mt-0.5 text-sm font-bold text-slate-100">
+        <p className="mt-0.5 text-sm font-bold text-[#FFF8F2]">
           Tools available to this agent
         </p>
       </div>
 
-      <div className="divide-y divide-slate-700/60">
+      <div className="divide-y divide-[#FFF8F2]/10">
         {TOOL_CATALOG.map((tool) => {
           const meta = statusMeta[tool.status];
           return (
             <div key={tool.id} className="px-5 py-4">
               <div className="mb-2 flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-mono text-sm font-bold text-slate-100">{tool.id}</p>
-                  <p className="mt-0.5 text-[11px] text-slate-500">
+                  <p className="font-mono text-sm font-bold text-[#FFF8F2]">{tool.id}</p>
+                  <p className="mt-0.5 text-[11px] text-[#FFF8F2]/44">
                     {tool.provider} · {tool.category}
                   </p>
                 </div>
@@ -215,8 +215,8 @@ function ToolCatalogPanel() {
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-600">{tool.desc}</p>
-              <p className="mt-1.5 font-mono text-[10px] text-slate-700">→ {tool.decision}</p>
+              <p className="text-[11px] leading-relaxed text-[#FFF8F2]/42">{tool.desc}</p>
+              <p className="mt-1.5 font-mono text-[10px] text-[#FFF8F2]/30">→ {tool.decision}</p>
             </div>
           );
         })}
@@ -228,26 +228,26 @@ function ToolCatalogPanel() {
 // ─── Policy Engine panel ──────────────────────────────────────────────────────
 function PolicyEnginePanel() {
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-800">
-      <div className="border-b border-slate-700 px-5 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+    <section className="tab-card overflow-hidden rounded-2xl">
+      <div className="border-b border-[#FFF8F2]/10 px-5 py-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFF8F2]/42">
           Policy Engine
         </p>
-        <p className="mt-0.5 text-sm font-bold text-slate-100">
+        <p className="mt-0.5 text-sm font-bold text-[#FFF8F2]">
           Rules applied per spend request
         </p>
       </div>
 
-      <div className="divide-y divide-slate-700/50 px-5">
+      <div className="divide-y divide-[#FFF8F2]/10 px-5">
         {POLICY_RULES.map((rule) => (
           <div key={rule.label} className="flex items-center justify-between gap-4 py-2.5">
-            <span className="text-xs text-slate-500">{rule.label}</span>
+            <span className="text-xs text-[#FFF8F2]/45">{rule.label}</span>
             <span className={`font-mono text-[11px] font-semibold ${
               rule.type === "allowed"
                 ? "text-green-400"
                 : rule.type === "blocked"
                 ? "text-red-400"
-                : "text-slate-400"
+                : "text-[#FFF8F2]/62"
             }`}>
               {rule.value}
             </span>
@@ -255,8 +255,8 @@ function PolicyEnginePanel() {
         ))}
       </div>
 
-      <div className="border-t border-slate-700 px-5 py-3">
-        <p className="font-mono text-[10px] text-slate-700">
+      <div className="border-t border-[#FFF8F2]/10 px-5 py-3">
+        <p className="font-mono text-[10px] text-[#FFF8F2]/30">
           Policy-controlled paid tool access for agents
         </p>
       </div>
@@ -283,43 +283,43 @@ function RequestPayloadCard({
   }[status];
 
   return (
-    <section className="rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-card">
+    <section className="tab-card rounded-2xl p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
             Request payload
           </p>
-          <p className="mt-0.5 font-mono text-[10px] text-slate-600">POST /v1/tab/run</p>
+          <p className="mt-0.5 font-mono text-[10px] text-[#FFF8F2]/38">POST /v1/tab/run</p>
         </div>
-        <span className="rounded-full border border-slate-600 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500">
+        <span className="rounded-full border border-[#FFF8F2]/14 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#FFF8F2]/48">
           {statusLabel}
         </span>
       </div>
 
       <dl className="space-y-3 text-xs">
         <div className="flex items-center justify-between gap-4">
-          <dt className="text-slate-500">budget_usd</dt>
+          <dt className="text-[#FFF8F2]/44">budget_usd</dt>
           <dd className="font-mono font-bold text-amber-400">{input.budget_usd}</dd>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <dt className="text-slate-500">max_tool_calls</dt>
-          <dd className="font-mono font-bold text-slate-200">{input.max_tool_calls}</dd>
+          <dt className="text-[#FFF8F2]/44">max_tool_calls</dt>
+          <dd className="font-mono font-bold text-[#FFF8F2]">{input.max_tool_calls}</dd>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <dt className="text-slate-500">chain</dt>
-          <dd className="font-mono font-bold text-slate-200">{input.chain}</dd>
+          <dt className="text-[#FFF8F2]/44">chain</dt>
+          <dd className="font-mono font-bold text-[#FFF8F2]">{input.chain}</dd>
         </div>
         <div>
-          <dt className="text-slate-500">token</dt>
-          <dd className="mt-1 break-all font-mono text-[11px] text-slate-300">{input.token}</dd>
+          <dt className="text-[#FFF8F2]/44">token</dt>
+          <dd className="mt-1 break-all font-mono text-[11px] text-[#FFF8F2]/72">{input.token}</dd>
         </div>
         <div>
-          <dt className="text-slate-500">goal</dt>
-          <dd className="mt-1 leading-relaxed text-slate-300">{input.goal}</dd>
+          <dt className="text-[#FFF8F2]/44">goal</dt>
+          <dd className="mt-1 leading-relaxed text-[#FFF8F2]/72">{input.goal}</dd>
         </div>
       </dl>
 
-      <p className="mt-4 border-t border-slate-700 pt-3 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 border-t border-[#FFF8F2]/10 pt-3 text-xs leading-relaxed text-[#FFF8F2]/50">
         Opened with budget {formatPayloadUsd(input.budget_usd)} and max tool calls {input.max_tool_calls}.
       </p>
     </section>
@@ -329,7 +329,7 @@ function RequestPayloadCard({
 // ─── Hero section ─────────────────────────────────────────────────────────────
 function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
   return (
-    <section className="relative overflow-hidden border-b border-slate-700/60 pb-14 pt-10">
+    <section className="relative overflow-hidden border-b border-[#FFF8F2]/10 pb-14 pt-10">
       <div className="tab-grid absolute inset-0 opacity-25" />
       <div className="pointer-events-none absolute left-1/4 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.05)" }} />
       <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full blur-3xl" style={{ background: "rgba(255,88,72,0.04)" }} />
@@ -341,7 +341,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 flex flex-wrap gap-2"
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FFF8F2]/14 bg-[#FFF8F2]/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[#FFF8F2]/52">
             Powered by x402 paid-tool backbone
           </span>
         </motion.div>
@@ -362,7 +362,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.13 }}
-              className="mt-5 max-w-xl text-lg leading-relaxed text-slate-400"
+              className="mt-5 max-w-xl text-lg leading-relaxed text-[#FFF8F2]/66"
             >
               Give agents controlled access to paid tools — with budgets,
               policy-based spend approval, and an auditable receipt trace
@@ -386,7 +386,7 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
               </button>
               <a
                 href="#answer"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3 text-sm font-bold text-slate-400 transition-all hover:border-slate-500 hover:text-slate-200"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#FFF8F2]/14 bg-[#FFF8F2]/5 px-6 py-3 text-sm font-bold text-[#FFF8F2]/64 transition-all hover:border-[#FFF8F2]/28 hover:text-[#FFF8F2]"
               >
                 View Spend Trace
               </a>
@@ -409,13 +409,13 @@ function HeroSection({ onRunDemo }: { onRunDemo: () => void }) {
             ].map((item) => (
               <div
                 key={item.step}
-                className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5"
+                className="tab-card flex items-center gap-3 rounded-xl px-4 py-2.5"
               >
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold"
                   style={{ border: "1px solid rgba(255,88,72,0.25)", background: "rgba(255,88,72,0.08)", color: "#FF5848" }}>
                   {item.step}
                 </span>
-                <p className="text-xs text-slate-400">{item.label}</p>
+                <p className="text-xs text-[#FFF8F2]/62">{item.label}</p>
               </div>
             ))}
           </motion.div>
@@ -449,7 +449,7 @@ export default function DashboardPage() {
   const isLoading = state.status === "loading";
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen tab-premium-shell">
       <TopNav onNewRun={handleReset} />
 
       <HeroSection onRunDemo={scrollToForm} />
@@ -491,11 +491,11 @@ export default function DashboardPage() {
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF5848]">
                         Spend Requests
                       </p>
-                      <h2 className="mt-0.5 text-base font-bold text-slate-50">
+                      <h2 className="mt-0.5 text-base font-bold text-[#FFF8F2]">
                         Policy check before every paid call
                       </h2>
                     </div>
-                    <span className="rounded-full border border-slate-700 px-3 py-0.5 font-mono text-[10px] text-slate-500">
+                    <span className="rounded-full border border-[#FFF8F2]/14 px-3 py-0.5 font-mono text-[10px] text-[#FFF8F2]/48">
                       {result.spendRequests.length} evaluated
                     </span>
                   </div>
