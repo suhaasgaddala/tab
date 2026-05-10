@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { AgentChat } from "../components/AgentChat";
 import { BudgetMeter } from "../components/BudgetMeter";
 import { FinalAnswer } from "../components/FinalAnswer";
 import { GoalForm } from "../components/GoalForm";
@@ -457,6 +458,8 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6">
         {/* ── Left column ── */}
         <div className="space-y-5" ref={formRef} id="goal">
+          <AgentChat runState={state} onApproveRun={handleRun} />
+
           <GoalForm isLoading={isLoading} onSubmit={handleRun} />
 
           <AnimatePresence mode="wait">
