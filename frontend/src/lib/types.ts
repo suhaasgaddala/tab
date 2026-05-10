@@ -8,7 +8,8 @@ export type PolicyResult =
   | "category_not_allowed"
   | "max_price_per_call_exceeded"
   | "insufficient_budget"
-  | "max_tool_calls_exceeded";
+  | "max_tool_calls_exceeded"
+  | "dependency_not_met";
 
 export interface TabRunRequest {
   goal: string;
@@ -54,8 +55,8 @@ export interface TabRunResult {
   spendRequests: SpendRequest[];
   receipts: Receipt[];
   finalAnswer: string;
-  confidence: "high" | "medium";
-  status: "completed" | "completed_with_budget_limit";
+  confidence: "high" | "medium" | "low";
+  status: "completed" | "completed_with_budget_limit" | "budget_constrained";
   hackathonScopeNote: string;
 }
 

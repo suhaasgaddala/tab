@@ -12,13 +12,14 @@ export type PolicyResult =
   | "category_not_allowed"
   | "max_price_per_call_exceeded"
   | "insufficient_budget"
-  | "max_tool_calls_exceeded";
+  | "max_tool_calls_exceeded"
+  | "dependency_not_met";
 
 export type TabReceiptStatus = "completed";
 
-export type TabRunStatus = "completed" | "completed_with_budget_limit";
+export type TabRunStatus = "completed" | "completed_with_budget_limit" | "budget_constrained";
 
-export type TabConfidence = "high" | "medium";
+export type TabConfidence = "high" | "medium" | "low";
 
 export interface TabRunInput {
   goal: string;
@@ -85,5 +86,5 @@ export interface TabRunResult {
   finalAnswer: string;
   confidence: TabConfidence;
   status: TabRunStatus;
-  hackathonScopeNote: "Existing x402 router is the backbone; Tab spend-control layer was built during the hackathon.";
+  hackathonScopeNote: string;
 }

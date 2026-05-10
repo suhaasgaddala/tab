@@ -66,13 +66,20 @@ describe("runTab", () => {
     expect(result.result).toBe("blocked_category");
   });
 
-  it("max price per call is enforced", () => {
+  it("max price per call is enforced and model-call is skipped due to dependency", () => {
     const result = runTab(DEFAULT_INPUT, { maxPricePerCallUsd: 0.001 });
 
     expect(result.spendRequests[0]?.tool).toBe("market-signal");
     expect(result.spendRequests[0]?.status).toBe("denied");
     expect(result.spendRequests[0]?.policyResult).toBe("max_price_per_call_exceeded");
-    expect(result.receipts.map((receipt) => receipt.tool)).toEqual(["model-call"]);
+    // model-call depends on market-signal — must be skipped when market-signal is denied
+    expect(result.spendRequests[1]?.tool).toBe("model-call");
+    expect(result.spendRequests[1]?.status).toBe("skipped");
+    expect(result.spendRequests[1]?.policyResult).toBe("dependency_not_met");
+    expect(result.receipts).toHaveLength(0);
+    expect(result.totalSpentUsd).toBe(0);
+    expect(result.status).toBe("budget_constrained");
+    expect(result.confidence).toBe("low");
   });
 
   it("max tool calls is enforced", () => {

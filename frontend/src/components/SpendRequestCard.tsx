@@ -11,12 +11,13 @@ const STATUS_STYLE: Record<SpendRequest["status"], { border: string; badge: stri
 
 // ─── Policy result display ────────────────────────────────────────────────────
 const POLICY_META: Record<PolicyResult, { label: string; color: string }> = {
-  approved:                  { label: "Budget passed · category allowed",        color: "text-green-400" },
-  blocked_category:          { label: "Blocked — category denied by policy",     color: "text-red-400" },
-  category_not_allowed:      { label: "Category not in allowed list",            color: "text-red-400" },
-  max_price_per_call_exceeded:{ label: "Price exceeds per-call limit",           color: "text-red-400" },
-  insufficient_budget:       { label: "Skipped — insufficient remaining budget", color: "text-slate-500" },
-  max_tool_calls_exceeded:   { label: "Skipped — max tool calls reached",        color: "text-slate-500" },
+  approved:                  { label: "Budget passed · category allowed",                    color: "text-green-400" },
+  blocked_category:          { label: "Blocked — category denied by policy",                 color: "text-red-400" },
+  category_not_allowed:      { label: "Category not in allowed list",                        color: "text-red-400" },
+  max_price_per_call_exceeded:{ label: "Price exceeds per-call limit",                       color: "text-red-400" },
+  insufficient_budget:       { label: "Skipped — insufficient remaining budget",             color: "text-slate-500" },
+  max_tool_calls_exceeded:   { label: "Skipped — max tool calls reached",                    color: "text-slate-500" },
+  dependency_not_met:        { label: "Skipped — required market-signal was not approved",   color: "text-slate-500" },
 };
 
 interface SpendRequestCardProps {
