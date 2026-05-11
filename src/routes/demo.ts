@@ -12,7 +12,7 @@ function notBuiltHtml(): string {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tab demo not built</title>
+    <title>voya demo not built</title>
     <style>
       body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
       main { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
@@ -25,7 +25,7 @@ function notBuiltHtml(): string {
   <body>
     <main>
       <section>
-        <h1>Tab demo is not built yet.</h1>
+        <h1>voya demo is not built yet.</h1>
         <p>The API is running. Build the frontend, then refresh this page.</p>
         <code>npm run build:frontend</code>
       </section>

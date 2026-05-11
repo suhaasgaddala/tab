@@ -6,8 +6,8 @@ const app = createApp(config);
 
 app.listen(config.port, () => {
   logger.info({
-    service: "agentic-x402-router",
+    service: "voya",
     port: config.port,
-    x402_enabled: config.x402.enabled
+    mock_ai: config.voya.mockAi
   }, "server started");
 });

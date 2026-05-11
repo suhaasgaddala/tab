@@ -1,7 +1,7 @@
 {
-  "name": "tab",
+  "name": "voya",
   "version": "0.1.0",
-  "description": "Tab: the spend layer for AI agents on an existing x402 router backbone.",
+  "description": "voya: a voice and gesture-powered AI infinite canvas for visual productivity.",
   "type": "module",
   "main": "dist/src/server.js",
   "scripts": {
@@ -13,29 +13,19 @@
     "dev:frontend": "npm --prefix frontend run dev",
     "build:frontend": "npm --prefix frontend run build",
     "preview:frontend": "npm --prefix frontend run preview",
-    "build:all": "npm run build && npm run build:frontend",
-    "demo:tab": "tsx examples/run-tab.ts",
-    "demo:tab:budget": "tsx examples/run-tab.ts --scenario budget",
-    "buyer:market-signal": "tsx examples/buyer-market-signal.ts",
-    "buyer:model-call": "tsx examples/buyer-model-call.ts"
+    "build:all": "npm run build && npm run build:frontend"
   },
   "keywords": [
-    "x402",
-    "agentic",
-    "llm",
-    "inference",
-    "gateway"
+    "ai-canvas",
+    "voice",
+    "productivity",
+    "workflow",
+    "voya"
   ],
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
-    "@coinbase/x402": "^2.1.0",
     "@supabase/supabase-js": "^2.105.4",
-    "@x402/core": "^2.10.0",
-    "@x402/evm": "^2.10.0",
-    "@x402/express": "^2.10.0",
-    "@x402/extensions": "^2.10.0",
-    "@x402/fetch": "^2.10.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "pino": "^9.6.0",

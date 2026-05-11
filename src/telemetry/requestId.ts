@@ -1,34 +1,21 @@
-import crypto from "node:crypto";
 import type { NextFunction, Request, Response } from "express";
 
-declare global {
-  namespace Express {
-    interface Request {
-      requestId: string;
-    }
+declare module "express-serve-static-core" {
+  interface Request {
+    requestId?: string;
   }
-}
-
-function sanitizeRequestId(value: unknown): string | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed || trimmed.length > 80) {
-    return undefined;
-  }
-
-  const safe = trimmed.replace(/[^a-zA-Z0-9_.:-]/g, "");
-  return safe || undefined;
-}
-
-export function createRequestId(): string {
-  return `req_${Date.now().toString(36)}_${crypto.randomUUID().slice(0, 12)}`;
 }
 
 export function requestIdMiddleware(req: Request, res: Response, next: NextFunction) {
-  req.requestId = sanitizeRequestId(req.header("x-request-id")) ?? createRequestId();
-  res.setHeader("x-request-id", req.requestId);
+  const incoming = req.get("x-request-id");
+  const requestId = incoming?.trim() || createRequestId();
+
+  req.requestId = requestId;
+  res.setHeader("x-request-id", requestId);
   next();
+}
+
+function createRequestId() {
+  const random = Math.random().toString(36).slice(2, 14);
+  return `req_${Date.now().toString(36)}_${random}`;
 }
