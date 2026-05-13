@@ -46,6 +46,7 @@ export function createDemoRouter(): Router {
     res.status(200).type("html").send(notBuiltHtml());
   };
 
+  router.get("/", sendDemoIndex);
   router.get("/demo", sendDemoIndex);
   router.get("/demo/", sendDemoIndex);
   router.use("/demo/assets", express.static(FRONTEND_ASSETS_PATH, { index: false, redirect: false }));

@@ -5,7 +5,7 @@ import { getPriceForModel } from "../billing/pricing.js";
 export function createRootRouter(config: AppConfig): Router {
   const router = Router();
 
-  router.get("/", (_req, res) => {
+  router.get("/v1/status", (_req, res) => {
     const modelProvider = config.anthropic.apiKey ? "anthropic" : "mock";
     const modelCallPrice = getPriceForModel("claude-sonnet", config.pricing);
 
