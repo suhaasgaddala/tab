@@ -2,20 +2,32 @@ import express from "express";
 import type { AppConfig } from "./config.js";
 import { HttpError } from "./errors/httpError.js";
 import { errorHandler } from "./errors/errorHandler.js";
+import { createCapabilitiesRouter } from "./routes/capabilities.js";
 import { createDemoRouter } from "./routes/demo.js";
 import { createHealthRouter } from "./routes/health.js";
+import { createMarketSignalRouter } from "./routes/marketSignal.js";
+import { createModelCallRouter } from "./routes/modelCall.js";
+import { createModelsRouter } from "./routes/models.js";
 import { createRootRouter } from "./routes/root.js";
-import { createVoyaRouter } from "./routes/voya.js";
+import { createTabRunRouter } from "./routes/tabRun.js";
 import { requestIdMiddleware } from "./telemetry/requestId.js";
+import { createX402Middleware } from "./x402/middleware.js";
 
 export function createApp(config: AppConfig) {
   const app = express();
+
+  // Single shared x402 middleware instance covers all paid routes in RoutesConfig.
+  const paymentMiddleware = createX402Middleware(config);
 
   app.disable("x-powered-by");
   app.use(requestIdMiddleware);
   app.use(createRootRouter(config));
   app.use(createHealthRouter());
-  app.use(createVoyaRouter(config));
+  app.use(createModelsRouter(config));
+  app.use(createCapabilitiesRouter(config));
+  app.use(createTabRunRouter(config));
+  app.use(createModelCallRouter(config, paymentMiddleware));
+  app.use(createMarketSignalRouter(config, paymentMiddleware));
   app.use(createDemoRouter());
   app.use((req, _res, next) => {
     next(

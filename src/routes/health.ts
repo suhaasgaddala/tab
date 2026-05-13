@@ -6,7 +6,7 @@ export function createHealthRouter(): Router {
   router.get("/health", (_req, res) => {
     res.status(200).json({
       ok: true,
-      service: "voya",
+      service: "agentic-x402-router",
       timestamp: new Date().toISOString()
     });
   });
